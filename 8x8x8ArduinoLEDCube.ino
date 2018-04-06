@@ -1526,7 +1526,9 @@ void loop(){//***start loop***start loop***start loop***start loop***start loop*
 // LED(level you want 0-7, row you want 0-7, column you want 0-7, red brighness 0-15, green brighness 0-15, blue brighness 0-15);
 
 
-
+Serial.println("routineFactor =");
+Serial.println(routineFactor);
+routineFactor = 0;
 startShow();
 //displaySolidText("KARL",500,9,15,15);
 //displayScrollingLetter('K',15,15,15);
@@ -1605,6 +1607,7 @@ void startShow() {
         while (factorChange) {
           factorChange = false;
           color_wheelTWO();
+          clean();
         }
         break;
       }
@@ -1622,7 +1625,6 @@ void startShow() {
         currentRoutine = 1;
         break;
       }
-      routineFactor = 0;
     }
   //fireworks (20,15,0);
 //rainVersionTwo();
@@ -1905,7 +1907,9 @@ void test() {
 void fireworks (int iterations, int n, int delayx)
 {
   clean;
-
+  n *= 0.1 * (routineFactor + 10);
+  Serial.println("n = ");
+  Serial.println(n);
   int i,f,e,x;
 
   float origin_x = 3;
