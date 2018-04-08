@@ -1983,7 +1983,8 @@ void dancingCube(int* settings) {
     }
     CopyFloatMatrix((float*)smallCube, numberOfPoints, 4, (float*)cube);
     displayObject((float*) cube,numberOfPoints, R,G,B);
-    delay(100);
+    delay(100*pow(2,settings[1]));
+    int delayFactor = 50  *pow(2,settings[1]);
     for (int i = 0; i < sizeof(dancingCubeTransforms)/sizeof(dancingCubeTransforms[0]); i++) {
       if (interrupted) {
         interrupted = false;
@@ -1994,8 +1995,7 @@ void dancingCube(int* settings) {
       CopyFloatMatrix((float*)transformedCube, numberOfPoints, 4, (float*)cube);
       clean();
       drawLines((float*)cube, (int*)cubeAdjacency, numberOfPoints,R,G,B);
-      printFloatMatrix((float*)cube,8,4,"Transformed cube");
-      delay(0);
+      delay(delayFactor);
     }
     clean();
   }
