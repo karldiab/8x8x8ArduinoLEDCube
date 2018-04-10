@@ -1593,7 +1593,6 @@ void loop(){//***start loop***start loop***start loop***start loop***start loop*
 // To control an LED, you simply:
 // LED(level you want 0-7, row you want 0-7, column you want 0-7, red brighness 0-15, green brighness 0-15, blue brighness 0-15);
 
-
 startShow();
 currentRoutine++;
 //displaySolidText("KARL",500,9,15,15);
@@ -1604,7 +1603,6 @@ currentRoutine++;
 }//***end loop***end loop***end loop***end loop***end loop***end loop***end loop***end loop***end loop***end loop***end loop***end loop
 
 void startShow() {
-
   if (currentRoutine < 0) {
     currentRoutine = numberOfRoutines-1;
    } else if (currentRoutine >= numberOfRoutines) {
@@ -1970,6 +1968,7 @@ pinMode(blank_pin, OUTPUT);//moved down here so outputs are all off until the fi
 //*+*+*+*+*+*+*+*+*+*+*+*+PUT ANIMATIONS DOWN HERE*+*+*+*+*+*+*+*+*+*+*+*+PUT ANIMATIONS DOWN HERE*+*+*+*+*+*+*+*+*+*+*+*+PUT ANIMATIONS DOWN HERE
 
 void dancingCube(int* settings) {
+  clean();
   int iterations = 20 * pow(2,settings[0]);
   int numberOfPoints = sizeof(smallCube)/sizeof(smallCube[0]);
   float cube[numberOfPoints][4];
@@ -1992,9 +1991,11 @@ void dancingCube(int* settings) {
         return;
       }
       MultiplyFloatMatrix((float*)cube, (float*)dancingCubeTransforms[i], numberOfPoints, 4, 4, (float*)transformedCube);
+      
+      
+      drawLines((float*)transformedCube, (int*)cubeAdjacency, numberOfPoints,R,G,B);
+      drawLines((float*)cube, (int*)cubeAdjacency, numberOfPoints,0,0,0);
       CopyFloatMatrix((float*)transformedCube, numberOfPoints, 4, (float*)cube);
-      clean();
-      drawLines((float*)cube, (int*)cubeAdjacency, numberOfPoints,R,G,B);
       delay(delayFactor);
     }
     clean();
