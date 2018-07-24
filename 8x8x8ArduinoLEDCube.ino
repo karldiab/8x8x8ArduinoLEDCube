@@ -1611,7 +1611,7 @@ Serial.print("START LOOP currentRoutine ");Serial.println(currentRoutine);
 //Each animation located in a sub routine
 // To control an LED, you simply:
 // LED(level you want 0-7, row you want 0-7, column you want 0-7, red brighness 0-15, green brighness 0-15, blue brighness 0-15);
-  if (currentRoutine <= 0) {
+  if (currentRoutine < 0) {
     currentRoutine = numberOfRoutines-1;
    } else if (currentRoutine > numberOfRoutines) {
     currentRoutine = 0;
@@ -1629,12 +1629,12 @@ Serial.print("START LOOP currentRoutine ");Serial.println(currentRoutine);
       }
       case 2 : 
       {
-        folder(routineSettings[currentRoutine]);
+        //folder(routineSettings[currentRoutine]);
         break;
       }
       case 3 : 
       {
-        sinwaveTwo();
+        //sinwaveTwo();
         break;
       }
       case 4 : 
@@ -1666,7 +1666,7 @@ Serial.print("START LOOP currentRoutine ");Serial.println(currentRoutine);
       }
       case 9 :
       {
-        fireworks(20,15,0,routineSettings[currentRoutine]);
+        //fireworks(20,15,0,routineSettings[currentRoutine]);
         break;
       }
       default : 
@@ -1959,59 +1959,62 @@ void dancingCube(int* settings) {
   clean();
   int upOrDown;
   int iterations = 300 * pow(2,settings[0]);
-  int edgeCurrentlyGlowing[12] = {0,0,0,0,0,0,0,0,0,0,0,0};
-  //first 3 items are xyz of current glow location, 4th item indicates whether its x y or z that changes, 5th is which frame edge is currently on
-  int edgeCurrentFrame[12][5] = {
-    {0,0,0,2,0},
-    {0,0,7,1,0},
-    {0,7,0,1,0},
-    {0,7,7,2,0},
-    {0,0,0,0,0},
-    {0,0,7,0,0},
-    {0,7,0,0,0},
-    {0,7,7,0,0},
-    {7,0,0,2,0},
-    {7,0,7,1,0},
-    {7,7,0,1,0},
-    {7,7,7,2,0}};
+  int numberOfFrames = 17;
+  bool edgeCurrentlyGlowing[numberOfFrames] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+  //first 3 items are xyz of current glow location, 4th item indicates whether its x y or z that changes, 5th is which frame edge is currently on, 6th is direction of travel
+  int edgeCurrentFrame[numberOfFrames][6] = {
+    {0,0,0,2,0,1},
+    {0,0,7,1,0,1},
+    {0,7,7,2,0,-1},
+    {0,7,0,1,0,-1},
+    {0,0,0,0,0,1},
+    {7,0,0,1,0,1},
+    {7,7,0,2,0,1},
+    {7,7,7,1,0,-1},
+    {7,0,7,0,0,-1},
+    {0,0,7,1,0,1},
+    {0,7,7,0,0,1},
+    {7,7,7,1,0,-1},
+    {7,0,7,2,0,-1},
+    {7,0,0,1,0,1},
+    {7,7,0,0,0,-1},
+    {0,7,0,1,0,-1},
+    {0,0,0,2,0,1}};
   for (int i = 0; i < iterations; i++) {
     if (interrupted) {
       interruptRoutine(true);
       return;
     }
-    for (int j = 0; j < 12; j++) {
+    for (int j = 0; j < numberOfFrames; j++) {
       if (edgeCurrentlyGlowing[j] != 0) {
-        //Serial.print(edgeCurrentFrame[j][0]);Serial.print(",");Serial.print(edgeCurrentFrame[j][1]);Serial.print(",");Serial.print(edgeCurrentFrame[j][2]);Serial.print(",");Serial.print(edgeCurrentFrame[j][3]);Serial.print(",");Serial.print(edgeCurrentFrame[j][4]);Serial.print("+");Serial.println(edgeCurrentlyGlowing[j]);
+        Serial.print(edgeCurrentFrame[j][0]);Serial.print(",");Serial.print(edgeCurrentFrame[j][1]);Serial.print(",");Serial.print(edgeCurrentFrame[j][2]);Serial.print(",");Serial.print(edgeCurrentFrame[j][3]);Serial.print(",");Serial.print(edgeCurrentFrame[j][4]);Serial.print("+");Serial.println(edgeCurrentlyGlowing[j]);
         if (edgeCurrentFrame[j][4] == 8) {
           LED(edgeCurrentFrame[j][0],edgeCurrentFrame[j][1],edgeCurrentFrame[j][2],0,0,0);
           edgeCurrentFrame[j][4] = 0;
           edgeCurrentlyGlowing[j] = 0;
+          if (edgeCurrentFrame[j][5] == 1) {
+            edgeCurrentFrame[j][edgeCurrentFrame[j][3]] = 0;
+          } else {
+            edgeCurrentFrame[j][edgeCurrentFrame[j][3]] = 7;
+          }
+          if (j != numberOfFrames-1) {
+            edgeCurrentlyGlowing[j+1] = true;
+            //edgeCurrentFrame[j+1][edgeCurrentFrame[j+1][3]] = 1;
+          }
           break;
         }
         if (edgeCurrentFrame[j][4] == 0) {
-          //Serial.println("new line born");
-          if (edgeCurrentlyGlowing[j] == -1 && edgeCurrentFrame[j][edgeCurrentFrame[j][3]] == 0) {
-          edgeCurrentFrame[j][edgeCurrentFrame[j][3]] = 7;
-          } else if (edgeCurrentlyGlowing[j] == 1 && edgeCurrentFrame[j][edgeCurrentFrame[j][3]] == 7) {
-            edgeCurrentFrame[j][edgeCurrentFrame[j][3]] = 0;
-          }
           LED(edgeCurrentFrame[j][0],edgeCurrentFrame[j][1],edgeCurrentFrame[j][2],random(16),random(16),random(16));
-          //LED(edgeCurrentFrame[j][0],edgeCurrentFrame[j][1],edgeCurrentFrame[j][2],colorSets[settings[3]][edgeCurrentFrame[j][4]][0],colorSets[settings[3]][edgeCurrentFrame[j][4]][1],colorSets[settings[3]][edgeCurrentFrame[j][4]][2]);
         } else {
           LED(edgeCurrentFrame[j][0],edgeCurrentFrame[j][1],edgeCurrentFrame[j][2],0,0,0);
-          edgeCurrentFrame[j][edgeCurrentFrame[j][3]] += edgeCurrentlyGlowing[j];
+          edgeCurrentFrame[j][edgeCurrentFrame[j][3]] += edgeCurrentFrame[j][5];
           LED(edgeCurrentFrame[j][0],edgeCurrentFrame[j][1],edgeCurrentFrame[j][2],random(16),random(16),random(16));
           //LED(edgeCurrentFrame[j][0],edgeCurrentFrame[j][1],edgeCurrentFrame[j][2],colorSets[settings[3]][edgeCurrentFrame[j][4]][0],colorSets[settings[3]][edgeCurrentFrame[j][4]][1],colorSets[settings[3]][edgeCurrentFrame[j][4]][2]);
         }
         edgeCurrentFrame[j][4]++;
       } else {
-        if (random(240) >= 241 - settings[1]) {
-          upOrDown = random(2);
-          if (upOrDown == 1) {
-            edgeCurrentlyGlowing[j] = -1;
-          } else {
-            edgeCurrentlyGlowing[j] = 1;
-          }
+        if (random(240) >= 245 - settings[1]) {
+            edgeCurrentlyGlowing[j] = true;
         }
       }
     }
