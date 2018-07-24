@@ -32,13 +32,17 @@ int lastAnode;
 #define btnLEFT   3
 #define btnSELECT 4
 #define btnNONE   5
-#define numberOfRoutines 9
+#define numberOfRoutines 10
+//This holds the settings for each routine, there are 4 different settings, which each setting does it decided by the routine itself
 int routineSettings[numberOfRoutines][4];
-char* settingNames[4] = {"Duration", "Factor 1", "Factor 2", "Factor 3"};
+char* settingNames[4] = {"A", "B", "C", "D"};
+//This array is used to hold the limits for each setting. This is important to prevent OOB errors. Each setting limit defaults to 9 if not set
+int routineSettingsLimits[numberOfRoutines][4];
 int currentSetting = 0;
 int currentRoutine = 0;
 unsigned long lastTimeInterrupted = millis();
 bool interrupted = false;
+bool settingChange = false;
 bool factorChange = false;
 int routineFactor = 0;
 int lcd_key     = 0;
@@ -98,6 +102,11 @@ int BAM_Bit, BAM_Counter=0; // Bit Angle Modulation variables to keep track of t
 
 //These variables can be used for other things
 unsigned long start;//for a millis timer to cycle through the animations
+//appealing sets of colors to use for various animations
+int colorSets[2][8][3] = {{{0, 5, 15},{0, 1, 9},{0, 0, 10},{1, 0, 11},{3, 0, 12},{10, 0, 15},{10, 0, 10},{10, 0, 1}},
+{{15, 15, 0},{10, 10, 0},{15, 5, 0},{15, 2, 0},{15, 1, 0},{15, 0, 0},{12, 0, 0},{10, 0, 0}}};
+String messages[4] = {"??????","XXXXXX","!!!!!!!!","BASS"};
+//Object transform variables
 int scrollingTextTransformSteps = 14;
 int scrollingTestStepsTillCleared = 8;
 int scrollingTextTransformObjects = 4;
@@ -1526,6 +1535,16 @@ char font_data[128][8] = {
 
 //****setup****setup****setup****setup****setup****setup****setup****setup****setup****setup****setup****setup****setup
 void setup(){
+//The second setting, "B" defaults to 6
+for (int i = 0; i < numberOfRoutines; i++) {
+  routineSettings[i][1] = 6;
+  routineSettings[i][0] = 3;
+  for (int j = 0; j < 4; j++) {
+    if (routineSettingsLimits[i][j] == 0) {
+      routineSettingsLimits[i][j] = 9;
+    }
+  }
+}
   // initialize the pushbutton pin as an input:
 pinMode(buttonPin, INPUT);
 // Attach an interrupt to the ISR vector
@@ -1588,109 +1607,67 @@ interrupts();//let the show begin, this lets the multiplexing start
 
 
 void loop(){//***start loop***start loop***start loop***start loop***start loop***start loop***start loop***start loop***start loop
-
+Serial.print("START LOOP currentRoutine ");Serial.println(currentRoutine);
 //Each animation located in a sub routine
 // To control an LED, you simply:
 // LED(level you want 0-7, row you want 0-7, column you want 0-7, red brighness 0-15, green brighness 0-15, blue brighness 0-15);
-
-startShow();
-currentRoutine++;
-//displaySolidText("KARL",500,9,15,15);
-//displayScrollingLetter('K',15,15,15);
-//displayScrollingText("JEREMY X KARL = CUBE",0,0,15);
-
-
-}//***end loop***end loop***end loop***end loop***end loop***end loop***end loop***end loop***end loop***end loop***end loop***end loop
-
-void startShow() {
-  if (currentRoutine < 0) {
+  if (currentRoutine <= 0) {
     currentRoutine = numberOfRoutines-1;
-   } else if (currentRoutine >= numberOfRoutines) {
+   } else if (currentRoutine > numberOfRoutines) {
     currentRoutine = 0;
    }
     switch (currentRoutine) {
       case 0 : 
       {
-        fireworks (20,15,0,routineSettings[0]);
-        while (factorChange) {
-          factorChange = false;
-          fireworks (20,15,0,routineSettings[0]);
-        }
+        displayTextRoutine(routineSettings[currentRoutine]);
         break;
       }
       case 1 : 
       {
-        rainVersionTwo(routineSettings[1]);
-        while (factorChange) {
-          factorChange = false;
-          rainVersionTwo(routineSettings[1]);
-        }
+        rainVersionTwo(routineSettings[currentRoutine]);
         break;
       }
       case 2 : 
       {
-        folder(routineSettings[2]);
-        while (factorChange) {
-          factorChange = false;
-          folder(routineSettings[2]);
-        }
+        folder(routineSettings[currentRoutine]);
         break;
       }
       case 3 : 
       {
         sinwaveTwo();
-        while (factorChange) {
-          factorChange = false;
-          sinwaveTwo();
-        }
         break;
       }
       case 4 : 
       {
-        wipe_out();
-        while (factorChange) {
-          factorChange = false;
-          wipe_out();
-        }
+        //wipe_out();
         clean();
         break;
       }
       case 5 : 
       {
-        bouncyvTwo();
-        while (factorChange) {
-          factorChange = false;
-          bouncyvTwo();
-        }
+        //bouncyvTwo();
         break;
       }
       case 6 : 
       {
-        color_wheelTWO();
+        //color_wheelTWO();
         clean();
-        while (factorChange) {
-          factorChange = false;
-          color_wheelTWO();
-          clean();
-        }
         break;
       }
       case 7 : 
       {
-        harlem_shake();
-        while (factorChange) {
-          factorChange = false;
-          harlem_shake();
-        }
+        //harlem_shake();
         break;
       }
       case 8 :
       {
-        dancingCube(routineSettings[8]);
-        while (factorChange) {
-          factorChange = false;
-          dancingCube(routineSettings[8]);
-        }
+        dancingCube(routineSettings[currentRoutine]);
+        break;
+      }
+      case 9 :
+      {
+        fireworks(20,15,0,routineSettings[currentRoutine]);
+        break;
       }
       default : 
       {
@@ -1708,10 +1685,21 @@ void startShow() {
 //color_wheelTWO();
 //clean();
 //harlem_shake();
-}
+currentRoutine++;
+Serial.print("END LOOP currentRoutine ");Serial.println(currentRoutine);
+//displaySolidText("KARL",500,9,15,15);
+//displayScrollingLetter('K',15,15,15);
+//displayScrollingText("JEREMY X KARL = CUBE",0,0,15);
+
+
+}//***end loop***end loop***end loop***end loop***end loop***end loop***end loop***end loop***end loop***end loop***end loop***end loop
+
+
+
+
 
 void pin_ISR() {
- if (millis() - lastTimeInterrupted < 200)
+ if (millis() - lastTimeInterrupted < 400)
   return;
  lastTimeInterrupted = millis();
  lcd_key = read_LCD_buttons();  // read the buttons
@@ -1721,26 +1709,29 @@ void pin_ISR() {
    case btnRIGHT:
      {
       //currentRoutine++;
-     Serial.println(currentRoutine);
+     Serial.print("currentRoutine ");Serial.println(currentRoutine);
      break;
      }
    case btnLEFT:
      {
      currentRoutine-=2;
-     Serial.println(currentRoutine);
+     Serial.print("currentRoutine ");Serial.println(currentRoutine);
      break;
      }
    case btnUP:
      {
-     routineSettings[currentRoutine][currentSetting]++;
+     if (++routineSettings[currentRoutine][currentSetting] > routineSettingsLimits[currentRoutine][currentSetting])
+      routineSettings[currentRoutine][currentSetting] = routineSettingsLimits[currentRoutine][currentSetting];
      factorChange = true;
+     
       Serial.print(settingNames[currentSetting]);Serial.print(" set to ");Serial.println(routineSettings[currentRoutine][currentSetting]);
       Serial.print("currentRoutine ");Serial.println(currentRoutine);
      break;
      }
    case btnDOWN:
      {
-     routineSettings[currentRoutine][currentSetting]--;
+     if (--routineSettings[currentRoutine][currentSetting] < 0)
+      routineSettings[currentRoutine][currentSetting] = 0;
      factorChange = true;
       Serial.print(settingNames[currentSetting]);Serial.print(" set to ");Serial.println(routineSettings[currentRoutine][currentSetting]);
       Serial.print("currentRoutine ");Serial.println(currentRoutine);
@@ -1748,12 +1739,9 @@ void pin_ISR() {
      }
    case btnSELECT:
      {
-//int routineSettings[numberOfRoutines][4];
-//char settingNames[4] = {"Duration", "Factor 1", "Factor 2", "Factor 3"}
-//int currentSetting = 0;
      if (++currentSetting > 3)
       currentSetting = 0;
-      interrupted = false;
+     settingChange = true;
      Serial.print("Current Selected Setting: ");Serial.println(settingNames[currentSetting]);
      break;
      }
@@ -1969,6 +1957,100 @@ pinMode(blank_pin, OUTPUT);//moved down here so outputs are all off until the fi
 
 void dancingCube(int* settings) {
   clean();
+  int upOrDown;
+  int iterations = 300 * pow(2,settings[0]);
+  int edgeCurrentlyGlowing[12] = {0,0,0,0,0,0,0,0,0,0,0,0};
+  //first 3 items are xyz of current glow location, 4th item indicates whether its x y or z that changes, 5th is which frame edge is currently on
+  int edgeCurrentFrame[12][5] = {
+    {0,0,0,2,0},
+    {0,0,7,1,0},
+    {0,7,0,1,0},
+    {0,7,7,2,0},
+    {0,0,0,0,0},
+    {0,0,7,0,0},
+    {0,7,0,0,0},
+    {0,7,7,0,0},
+    {7,0,0,2,0},
+    {7,0,7,1,0},
+    {7,7,0,1,0},
+    {7,7,7,2,0}};
+  for (int i = 0; i < iterations; i++) {
+    if (interrupted) {
+      interruptRoutine(true);
+      return;
+    }
+    for (int j = 0; j < 12; j++) {
+      if (edgeCurrentlyGlowing[j] != 0) {
+        //Serial.print(edgeCurrentFrame[j][0]);Serial.print(",");Serial.print(edgeCurrentFrame[j][1]);Serial.print(",");Serial.print(edgeCurrentFrame[j][2]);Serial.print(",");Serial.print(edgeCurrentFrame[j][3]);Serial.print(",");Serial.print(edgeCurrentFrame[j][4]);Serial.print("+");Serial.println(edgeCurrentlyGlowing[j]);
+        if (edgeCurrentFrame[j][4] == 8) {
+          LED(edgeCurrentFrame[j][0],edgeCurrentFrame[j][1],edgeCurrentFrame[j][2],0,0,0);
+          edgeCurrentFrame[j][4] = 0;
+          edgeCurrentlyGlowing[j] = 0;
+          break;
+        }
+        if (edgeCurrentFrame[j][4] == 0) {
+          //Serial.println("new line born");
+          if (edgeCurrentlyGlowing[j] == -1 && edgeCurrentFrame[j][edgeCurrentFrame[j][3]] == 0) {
+          edgeCurrentFrame[j][edgeCurrentFrame[j][3]] = 7;
+          } else if (edgeCurrentlyGlowing[j] == 1 && edgeCurrentFrame[j][edgeCurrentFrame[j][3]] == 7) {
+            edgeCurrentFrame[j][edgeCurrentFrame[j][3]] = 0;
+          }
+          LED(edgeCurrentFrame[j][0],edgeCurrentFrame[j][1],edgeCurrentFrame[j][2],random(16),random(16),random(16));
+          //LED(edgeCurrentFrame[j][0],edgeCurrentFrame[j][1],edgeCurrentFrame[j][2],colorSets[settings[3]][edgeCurrentFrame[j][4]][0],colorSets[settings[3]][edgeCurrentFrame[j][4]][1],colorSets[settings[3]][edgeCurrentFrame[j][4]][2]);
+        } else {
+          LED(edgeCurrentFrame[j][0],edgeCurrentFrame[j][1],edgeCurrentFrame[j][2],0,0,0);
+          edgeCurrentFrame[j][edgeCurrentFrame[j][3]] += edgeCurrentlyGlowing[j];
+          LED(edgeCurrentFrame[j][0],edgeCurrentFrame[j][1],edgeCurrentFrame[j][2],random(16),random(16),random(16));
+          //LED(edgeCurrentFrame[j][0],edgeCurrentFrame[j][1],edgeCurrentFrame[j][2],colorSets[settings[3]][edgeCurrentFrame[j][4]][0],colorSets[settings[3]][edgeCurrentFrame[j][4]][1],colorSets[settings[3]][edgeCurrentFrame[j][4]][2]);
+        }
+        edgeCurrentFrame[j][4]++;
+      } else {
+        if (random(240) >= 241 - settings[1]) {
+          upOrDown = random(2);
+          if (upOrDown == 1) {
+            edgeCurrentlyGlowing[j] = -1;
+          } else {
+            edgeCurrentlyGlowing[j] = 1;
+          }
+        }
+      }
+    }
+    delay(100);
+  }
+  clean();
+  iterations = 20 * pow(2,settings[0]);
+  int numberOfPoints = sizeof(smallCube)/sizeof(smallCube[0]);
+  float cube[numberOfPoints][4];
+  float transformedCube[numberOfPoints][4];
+  for (int runs = 0; runs < iterations; runs++) {
+    int R = random(16), G = random(16), B = random(16);
+    if (interrupted) {
+      interruptRoutine(true);
+      return;
+    }
+    CopyFloatMatrix((float*)smallCube, numberOfPoints, 4, (float*)cube);
+    displayObject((float*) cube,numberOfPoints, R,G,B);
+    delay(100*pow(2,settings[1]-6));
+    int delayFactor = 50  *pow(2,settings[1]-6);
+    for (int i = 0; i < sizeof(dancingCubeTransforms)/sizeof(dancingCubeTransforms[0]); i++) {
+      if (interrupted) {
+        interruptRoutine(true);
+        return;
+      }
+      MultiplyFloatMatrix((float*)cube, (float*)dancingCubeTransforms[i], numberOfPoints, 4, 4, (float*)transformedCube);
+      
+      
+      drawLines((float*)transformedCube, (int*)cubeAdjacency, numberOfPoints,R,G,B);
+      drawLines((float*)cube, (int*)cubeAdjacency, numberOfPoints,0,0,0);
+      CopyFloatMatrix((float*)transformedCube, numberOfPoints, 4, (float*)cube);
+      delay(delayFactor);
+    }
+    clean();
+  }
+}
+
+void dancingCube2(int* settings) {
+  clean();
   int iterations = 20 * pow(2,settings[0]);
   int numberOfPoints = sizeof(smallCube)/sizeof(smallCube[0]);
   float cube[numberOfPoints][4];
@@ -1976,18 +2058,16 @@ void dancingCube(int* settings) {
   for (int runs = 0; runs < iterations; runs++) {
     int R = random(16), G = random(16), B = random(16);
     if (interrupted) {
-      interrupted = false;
-      clean();
+      interruptRoutine(true);
       return;
     }
     CopyFloatMatrix((float*)smallCube, numberOfPoints, 4, (float*)cube);
     displayObject((float*) cube,numberOfPoints, R,G,B);
-    delay(100*pow(2,settings[1]));
-    int delayFactor = 50  *pow(2,settings[1]);
+    delay(100*pow(2,settings[1]-6));
+    int delayFactor = 50  *pow(2,settings[1]-6);
     for (int i = 0; i < sizeof(dancingCubeTransforms)/sizeof(dancingCubeTransforms[0]); i++) {
       if (interrupted) {
-        interrupted = false;
-        clean();
+        interruptRoutine(true);
         return;
       }
       MultiplyFloatMatrix((float*)cube, (float*)dancingCubeTransforms[i], numberOfPoints, 4, 4, (float*)transformedCube);
@@ -2040,7 +2120,7 @@ void fireworks (int iterations, int n, int delayx, int* settings)
 {
   clean;
   iterations *= pow(2,settings[0]);
-  n *= 0.1 * (settings[1] + 10);
+  n *= 0.1 * (settings[1] + 4);
   Serial.println("n = ");
   Serial.println(n);
   Serial.print("iterations = ");Serial.println(iterations);
@@ -2068,8 +2148,7 @@ void fireworks (int iterations, int n, int delayx, int* settings)
         origin_x +=2;
         origin_y +=2;
     if (interrupted) {
-      interrupted = false;
-      clean();
+      interruptRoutine(true);
       return;
     }
     // shoot a particle up in the air
@@ -2180,8 +2259,7 @@ void wipe_out(){//*****wipe_out*****wipe_out*****wipe_out*****wipe_out*****wipe_
       
   while(millis()-start<10000){
         if (interrupted) {
-      interrupted = false;
-      clean();
+      interruptRoutine(true);
       return;
     }
     //fx=random(8); fy=random(8); fz=random(8);
@@ -2279,7 +2357,7 @@ void wipe_out(){//*****wipe_out*****wipe_out*****wipe_out*****wipe_out*****wipe_
 
 
 void rainVersionTwo(int* settings){//****rainVersionTwo****rainVersionTwo****rainVersionTwo****rainVersionTwo****rainVersionTwo
-  int x[64], y[64], z[64], addr, leds=64*0.1*(settings[1]+10), bright=1, ledcolor, colowheel;
+  int x[64], y[64], z[64], addr, leds=64*0.1*(settings[1]+4), bright=1, ledcolor, colowheel;
   int xx[64], yy[64], zz[64], xold[64], yold[64], zold[64], slowdown;
   int delayFactor = 15 * (64/leds);
   
@@ -2297,8 +2375,7 @@ void rainVersionTwo(int* settings){//****rainVersionTwo****rainVersionTwo****rai
   //for(addr=0; addr<leds; addr++)
   //LED(zold[addr], xold[addr], yold[addr], 0, 0, 0);
     if (interrupted) {
-      interrupted = false;
-      clean();
+      interruptRoutine(true);
       return;
     }
 if(ledcolor<200){
@@ -2436,8 +2513,7 @@ void folder(int* settings){//****folder****folder****folder****folder****folder*
   start=millis();
   while(millis()-start<10000*pow(2,settings[0])){ 
     if (interrupted) {
-      interrupted = false;
-      clean();
+      interruptRoutine(true);
       return;
     }
     if(top==1){
@@ -2891,8 +2967,7 @@ void bouncyvTwo(){//****bouncyTwo****bouncyTwo****bouncyTwo****bouncyTwo****boun
       
   while(millis()-start<15000){
     if (interrupted) {
-      interrupted = false;
-      clean();
+      interruptRoutine(true);
       return;
     }
     direct = random(3);
@@ -3024,8 +3099,7 @@ void sinwaveTwo(){//*****sinewaveTwo*****sinewaveTwo*****sinewaveTwo*****sinewav
       
   while(millis()-start<15000){
     if (interrupted) {
-      interrupted = false;
-      clean();
+      interruptRoutine(true);
       return;
     }
   for(addr=0; addr<8; addr++){
@@ -3123,8 +3197,7 @@ void color_wheel(){
       
   while(millis()-start<100000){
     if (interrupted) {
-      interrupted = false;
-      clean();
+      interruptRoutine(true);
       return;
     }
     swiper=random(3);
@@ -3181,8 +3254,7 @@ void color_wheelTWO(){//*****colorWheelTwo*****colorWheelTwo*****colorWheelTwo**
       
   while(millis()-start<10000){
     if (interrupted) {
-      interrupted = false;
-      clean();
+      interruptRoutine(true);
       return;
     }
     swiper=random(6);
@@ -3226,8 +3298,7 @@ void color_wheelTWO(){//*****colorWheelTwo*****colorWheelTwo*****colorWheelTwo**
   delay(30);
 }}  
     if (interrupted) {
-      interrupted = false;
-      clean();
+      interruptRoutine(true);
       return;
     }  
     if(swiper==3){
@@ -3289,8 +3360,7 @@ for(counter=0; counter<150; counter++){
   oredx=redx;
   oredy=redy;
     if (interrupted) {
-      interrupted = false;
-      clean();
+      interruptRoutine(true);
       return;
     }
 for(i=100; i>time_counter; i--)
@@ -3318,8 +3388,7 @@ for(i=100; i>time_counter; i--)
 }//counter
 
     if (interrupted) {
-      interrupted = false;
-      clean();
+      interruptRoutine(true);
       return;
     }
 for(counter=0; counter<85; counter++){
@@ -3373,8 +3442,7 @@ for(i=100; i>time_counter; i--)
 }//counter
 
     if (interrupted) {
-      interrupted = false;
-      clean();
+      interruptRoutine(true);
       return;
     }
 for(counter=0; counter<85; counter++){
@@ -3415,8 +3483,7 @@ for(i=100; i>time_counter; i--)
   }
  
     if (interrupted) {
-      interrupted = false;
-      clean();
+      interruptRoutine(true);
       return;
     }   
      if(greenx>6 || greenx<1){
@@ -3445,8 +3512,7 @@ for(i=100; i>time_counter; i--)
 
 
     if (interrupted) {
-      interrupted = false;
-      clean();
+      interruptRoutine(true);
       return;
     }
 for(counter=0; counter<3; counter++){ // counter was 3
@@ -3462,8 +3528,7 @@ for(counter=0; counter<3; counter++){ // counter was 3
   delay(50);
 }//counter
     if (interrupted) {
-      interrupted = false;
-      clean();
+      interruptRoutine(true);
       return;
     }
   for(m=0; m<1; m++){
@@ -3490,8 +3555,7 @@ for(counter=0; counter<3; counter++){ // counter was 3
   LED(i,j,k,random(16),0,random(16));
   }
     if (interrupted) {
-      interrupted = false;
-      clean();
+      interruptRoutine(true);
       return;
     }
 clean(); 
@@ -3660,8 +3724,7 @@ LED(x2-1,y2-1,z2-1,c21,c22,c23);
 
 
     if (interrupted) {
-      interrupted = false;
-      clean();
+      interruptRoutine(true);
       return;
     }
 
@@ -3749,8 +3812,7 @@ c2 = random(0,16);
 c3 = 0;}
   
     if (interrupted) {
-      interrupted = false;
-      clean();
+      interruptRoutine(true);
       return;
     }  
 int num1=-1, num2=-4, num3=-6, num4=-10;
@@ -3942,6 +4004,25 @@ void clean(){
   LED(ii,jj,kk,0,0,0);
   
 }
+void interruptRoutine(bool resetInterrupt){
+  if (resetInterrupt)
+    interrupted = false;
+  if (settingChange) {
+    settingChange = false;
+    String myChar;
+    myChar=settingNames[currentSetting];
+    displaySingleChar(myChar[0], 500,8, 15, 15);
+    currentRoutine--;
+  } else if (factorChange) {
+    factorChange = false;
+    String myChar;
+    myChar=String(routineSettings[currentRoutine][currentSetting]);
+    displaySingleChar(myChar[0], 500,8, 15, 15);
+    currentRoutine--;
+  }
+  clean();
+}
+
 void displaySolidText(String s, int delayms,int R, int G, int B) {
   for (char c : s) {
     displaySolidLetter(c,R,G,B);
@@ -3950,10 +4031,79 @@ void displaySolidText(String s, int delayms,int R, int G, int B) {
   displaySolidLetter(' ',R,G,B);
   delay(delayms);
 }
+void displayTextRoutine(int* settings) {
+  Serial.println("in text routine");
+  for (int i = 0; i < pow(2,settings[0]+1);i++) {
+     if (interrupted) {
+      interruptRoutine(true);
+      return;
+    }
+    if (settings[1]-6 < 0)
+    settings[1] = 6;
+    switch (settings[2]) {
+      case 0:
+      {
+        displayScrollingColoredText(messages[settings[1]-6],settings[3]);
+        break;
+      }
+      case 1:
+      {
+        displaySolidColoredText(messages[settings[1]-6],2000,settings[3]);
+        break;
+      }
+      case 2:
+      {
+        displayScrollingText(messages[settings[1]-6],random(16),random(16),random(16));
+        break;
+      }
+      case 3:
+      {
+        displaySolidText(messages[settings[1]-6],2000,random(16),random(16),random(16));
+        break;
+      }
+      default:
+      {
+        displayScrollingColoredText(messages[settings[1]-6],settings[3]);
+        break;
+      }
+    }
+  }
+  
+}
+void displaySolidColoredText(String s, int delayms, int colorSet) {
+  for (char c : s) {
+    displaySolidColoredLetter(c,colorSet);
+    if (interrupted) {
+      interruptRoutine(false);
+      return;
+    }
+    delay(delayms);
+  }
+  displaySolidLetter(' ',0,0,0);
+  delay(delayms);
+}
+void displaySingleChar(char c, int delayms,int R, int G, int B) {
+  displaySolidLetter(c,R,G,B);
+  delay(delayms);
+  clean();
+}
 
 void displayScrollingText(String s,int R, int G, int B) {
   for (char c : s) {
     displayScrollingLetter(c,R,G,B);
+     if (interrupted) {
+      interruptRoutine(false);
+      return;
+    }
+  }
+}
+void displayScrollingColoredText(String s,int colorSet) {
+  for (char c : s) {
+    displayScrollingColoredLetter(c,colorSet);
+     if (interrupted) {
+      interruptRoutine(false);
+      return;
+    }
   }
 }
 
@@ -3970,65 +4120,60 @@ void displaySolidLetter(char c,int R, int G, int B) {
   }
   for (int level = 0; level < 8; level++) {
     int row = 0;
+    //reverseCounter is used to horizonally flip the chars on opposite sides of the cube
+    int reverseCounter = 7;
     for (unsigned int mask = 0x80; mask != 0; mask >>= 1) {
         if (display[level] & mask) {
           //bit is 1
-            for (int column = 0; column < 8; column++) {
-              LED(level,row,column,R,G,B);
-            }
+            LED(level,row,0,R,G,B);
+            LED(level,reverseCounter,7,R,G,B);
+            LED(level,0,reverseCounter,R,G,B);
+            LED(level,7,row,R,G,B);
         }
         else {
             // bit is 0
-            for (int column = 0; column < 8; column++) {
-              LED(level,row,column,0,0,0);
-            }
+            LED(level,row,0,0,0,0);
+            LED(level,reverseCounter,7,0,0,0);
+            LED(level,0,reverseCounter,0,0,0);
+            LED(level,7,row,0,0,0);
         }
         row++;
+        reverseCounter--;
     }
   }
-  }
-void transformAndDisplayObject(int* pointsMatrix, int pointCounter, int* transformMatrix, int R, int G, int B) { 
-      int transformedObject[pointCounter][4];
-      MultiplyIntMatrix((int*)pointsMatrix, (int*)transformMatrix, pointCounter, 4, 4, (int*)transformedObject);
-      for (int pointNo = 0; pointNo < pointCounter; pointNo++) {
-        //if point is out of bounds, don't display it
-        if (transformedObject[pointNo][0] >= 0 && transformedObject[pointNo][0] < 8 && transformedObject[pointNo][1] >= 0 && transformedObject[pointNo][1] < 8 && transformedObject[pointNo][2] >= 0 && transformedObject[pointNo][2] < 8) {
-          LED(transformedObject[pointNo][0],transformedObject[pointNo][1],transformedObject[pointNo][2],R,G,B);
-        } else {
-          //Serial.print("Not displaying point ");Serial.print(transformedObject[pointNo][0]);Serial.print(",");Serial.print(transformedObject[pointNo][1]);Serial.print(",");Serial.print(transformedObject[pointNo][2]);Serial.println(" Cause OOB");
-        }
-      }
-      CopyIntMatrix((int*)transformedObject, pointCounter, 4, (int*)pointsMatrix);
  }
-void displayObject(float* pointsMatrix, int pointCounter, int R, int G, int B) {
-      float object[pointCounter][4];
-      CopyFloatMatrix((float*)pointsMatrix, pointCounter, 4, (float*)object);
-      for (int pointNo = 0; pointNo < pointCounter; pointNo++) {
-        //if point is out of bounds, don't display it
-        if (object[pointNo][0] >= 0 && object[pointNo][0] < 8 && object[pointNo][1] >= 0 && object[pointNo][1] < 8 && object[pointNo][2] >= 0 && object[pointNo][2] < 8) {
-          LED(object[pointNo][0],object[pointNo][1],object[pointNo][2],R,G,B);
+ void displaySolidColoredLetter(char c,int colorSet) {
+  char display[8];// = font_data[c];
+  int j = 7;
+  for (int i = 0; i < 8; i++) {
+    //display[0] = 0x00;
+    display[i] = font_data[c][j];
+    j--;
+  }
+  for (int level = 0; level < 8; level++) {
+    int row = 0;
+    //reverseCounter is used to horizonally flip the chars on opposite sides of the cube
+    int reverseCounter = 7;
+    for (unsigned int mask = 0x80; mask != 0; mask >>= 1) {
+        if (display[level] & mask) {
+          //bit is 1
+            LED(level,row,0,colorSets[colorSet][level][0],colorSets[colorSet][level][1],colorSets[colorSet][level][2]);
+            LED(level,reverseCounter,7,colorSets[colorSet][level][0],colorSets[colorSet][level][1],colorSets[colorSet][level][2]);
+            LED(level,0,reverseCounter,colorSets[colorSet][level][0],colorSets[colorSet][level][1],colorSets[colorSet][level][2]);
+            LED(level,7,row,colorSets[colorSet][level][0],colorSets[colorSet][level][1],colorSets[colorSet][level][2]);
         }
-      }
-}
-//this function takes a points and adjacency matrix and displays the lines in between the points according to the adjacency matrix
-void drawLines(float* pointsMatrix, int* adjacencyMatrix, int pointCounter, int R, int G, int B) {
-      float points[pointCounter][4];
-      CopyFloatMatrix((float*)pointsMatrix, pointCounter, 4, (float*)points);
-      int adjacency[pointCounter][pointCounter];
-      CopyIntMatrix((int*)adjacencyMatrix, pointCounter, pointCounter, (int*)adjacency);
-      for (int i = 0; i < pointCounter; i++) {
-        for (int j = 0; j < pointCounter; j++) {
-          if (adjacency[i][j]) {
-            int pointsInLine = 8;
-            for (int p = 0; p < pointsInLine; p++) {
-              float t = (float)p/pointsInLine;
-              LED(points[i][0] + (points[j][0]-points[i][0])*t,points[i][1] + (points[j][1]-points[i][1])*t,points[i][2] + (points[j][2]-points[i][2])*t,R,G,B);
-            }
-          }
+        else {
+            // bit is 0
+            LED(level,row,0,0,0,0);
+            LED(level,reverseCounter,7,0,0,0);
+            LED(level,0,reverseCounter,0,0,0);
+            LED(level,7,row,0,0,0);
         }
-      }
-}
-
+        row++;
+        reverseCounter--;
+    }
+  }
+ }
 
 void displayScrollingLetter(char c, int R, int G, int B) { 
   char letter[8];
@@ -4037,6 +4182,7 @@ void displayScrollingLetter(char c, int R, int G, int B) {
     letter[i] = font_data[c][j--];
   }
   int pointCounter = 0;
+  //counts how many points this char has
   for (int level = 0; level < 8; level++) {
       for (unsigned int mask = 0x80; mask != 0; mask >>= 1) {
           if (letter[level] & mask) {
@@ -4082,7 +4228,100 @@ void displayScrollingLetter(char c, int R, int G, int B) {
       }
       delay(150);
     }
-
-      
-
  }
+ void displayScrollingColoredLetter(char c, int colorSet) { 
+  char letter[8];
+  int j = 7;
+  for (int i = 0; i < 8; i++) {
+    letter[i] = font_data[c][j--];
+  }
+  int pointCounter = 0;
+  //counts how many points this char has
+  for (int level = 0; level < 8; level++) {
+      for (unsigned int mask = 0x80; mask != 0; mask >>= 1) {
+          if (letter[level] & mask) {
+            pointCounter++;
+          }
+      }
+    }
+    int pointsArray[pointCounter][4];
+    pointCounter = 0;
+    for (int level = 0; level < 8; level++) {
+        int row = 0;
+        for (unsigned int mask = 0x80; mask != 0; mask >>= 1) {
+            if (letter[level] & mask) {
+                pointsArray[pointCounter][0] = level;
+                pointsArray[pointCounter][1] = row; 
+                pointsArray[pointCounter][2] = 0;
+                pointsArray[pointCounter++][3] = 1;
+            }
+            row++;
+        }
+      }
+      int currentFrame[scrollingTextTransformObjects][pointCounter][4], previousFrame[scrollingTextTransformObjects][pointCounter][4];
+      for (int steps = 0; steps < scrollingTextTransformSteps; steps++) {
+        for (int transformObjects = 0 ; transformObjects < scrollingTextTransformObjects; transformObjects++) {
+        if (steps == 0) {
+          MultiplyIntMatrix((int*)pointsArray, (int*)scrollingTextTransform[transformObjects][steps], pointCounter, 4, 4, (int*)currentFrame[transformObjects]);
+          CopyIntMatrix((int*)currentFrame[transformObjects], pointCounter, 4, (int*)previousFrame[transformObjects]);   
+        } else {
+          CopyIntMatrix((int*)currentFrame[transformObjects], pointCounter, 4, (int*)previousFrame[transformObjects]);
+          MultiplyIntMatrix((int*)pointsArray, (int*)scrollingTextTransform[transformObjects][steps], pointCounter, 4, 4, (int*)currentFrame[transformObjects]);
+        }
+        for (int pointNo = 0; pointNo < pointCounter; pointNo++) {
+          if (previousFrame[transformObjects][pointNo][0] >= 0 && previousFrame[transformObjects][pointNo][0] < 8 && previousFrame[transformObjects][pointNo][1] >= 0 && previousFrame[transformObjects][pointNo][1] < 8 && previousFrame[transformObjects][pointNo][2] >= 0 && previousFrame[transformObjects][pointNo][2] < 8) {
+            LED((int)previousFrame[transformObjects][pointNo][0],(int)previousFrame[transformObjects][pointNo][1],(int)previousFrame[transformObjects][pointNo][2],0,0,0);
+          }
+        }
+        for (int pointNo = 0; pointNo < pointCounter; pointNo++) {
+          if (currentFrame[transformObjects][pointNo][0] >= 0 && currentFrame[transformObjects][pointNo][0] < 8 && currentFrame[transformObjects][pointNo][1] >= 0 && currentFrame[transformObjects][pointNo][1] < 8 && currentFrame[transformObjects][pointNo][2] >= 0 && currentFrame[transformObjects][pointNo][2] < 8) {
+            LED((int)currentFrame[transformObjects][pointNo][0],(int)currentFrame[transformObjects][pointNo][1],(int)currentFrame[transformObjects][pointNo][2],colorSets[colorSet][(int)currentFrame[transformObjects][pointNo][0]][0],colorSets[colorSet][(int)currentFrame[transformObjects][pointNo][0]][1],colorSets[colorSet][(int)currentFrame[transformObjects][pointNo][0]][2]);
+          }
+        }
+        
+      }
+      delay(150);
+    }
+ }
+ void transformAndDisplayObject(int* pointsMatrix, int pointCounter, int* transformMatrix, int R, int G, int B) { 
+  int transformedObject[pointCounter][4];
+  MultiplyIntMatrix((int*)pointsMatrix, (int*)transformMatrix, pointCounter, 4, 4, (int*)transformedObject);
+  for (int pointNo = 0; pointNo < pointCounter; pointNo++) {
+    //if point is out of bounds, don't display it
+    if (transformedObject[pointNo][0] >= 0 && transformedObject[pointNo][0] < 8 && transformedObject[pointNo][1] >= 0 && transformedObject[pointNo][1] < 8 && transformedObject[pointNo][2] >= 0 && transformedObject[pointNo][2] < 8) {
+      LED(transformedObject[pointNo][0],transformedObject[pointNo][1],transformedObject[pointNo][2],R,G,B);
+    } else {
+      //Serial.print("Not displaying point ");Serial.print(transformedObject[pointNo][0]);Serial.print(",");Serial.print(transformedObject[pointNo][1]);Serial.print(",");Serial.print(transformedObject[pointNo][2]);Serial.println(" Cause OOB");
+    }
+  }
+  CopyIntMatrix((int*)transformedObject, pointCounter, 4, (int*)pointsMatrix);
+}
+void displayObject(float* pointsMatrix, int pointCounter, int R, int G, int B) {
+  float object[pointCounter][4];
+  CopyFloatMatrix((float*)pointsMatrix, pointCounter, 4, (float*)object);
+  for (int pointNo = 0; pointNo < pointCounter; pointNo++) {
+    //if point is out of bounds, don't display it
+    if (object[pointNo][0] >= 0 && object[pointNo][0] < 8 && object[pointNo][1] >= 0 && object[pointNo][1] < 8 && object[pointNo][2] >= 0 && object[pointNo][2] < 8) {
+      LED(object[pointNo][0],object[pointNo][1],object[pointNo][2],R,G,B);
+    }
+  }
+}
+//this function takes a points and adjacency matrix and displays the lines in between the points according to the adjacency matrix
+void drawLines(float* pointsMatrix, int* adjacencyMatrix, int pointCounter, int R, int G, int B) {
+  float points[pointCounter][4];
+  CopyFloatMatrix((float*)pointsMatrix, pointCounter, 4, (float*)points);
+  int adjacency[pointCounter][pointCounter];
+  CopyIntMatrix((int*)adjacencyMatrix, pointCounter, pointCounter, (int*)adjacency);
+  for (int i = 0; i < pointCounter; i++) {
+    for (int j = 0; j < pointCounter; j++) {
+      if (adjacency[i][j]) {
+        int pointsInLine = 8;
+        for (int p = 0; p < pointsInLine; p++) {
+          float t = (float)p/pointsInLine;
+          LED(points[i][0] + (points[j][0]-points[i][0])*t,points[i][1] + (points[j][1]-points[i][1])*t,points[i][2] + (points[j][2]-points[i][2])*t,R,G,B);
+        }
+      }
+    }
+  }
+}
+
