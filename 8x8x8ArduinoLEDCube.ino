@@ -1607,7 +1607,10 @@ interrupts();//let the show begin, this lets the multiplexing start
 
 
 void loop(){//***start loop***start loop***start loop***start loop***start loop***start loop***start loop***start loop***start loop
-Serial.print("START LOOP currentRoutine ");Serial.println(currentRoutine);
+//Serial.print("START LOOP currentRoutine ");Serial.println(currentRoutine);
+rubiksCube();
+//clean();
+return;
 //Each animation located in a sub routine
 // To control an LED, you simply:
 // LED(level you want 0-7, row you want 0-7, column you want 0-7, red brighness 0-15, green brighness 0-15, blue brighness 0-15);
@@ -2061,6 +2064,50 @@ void dancingCube(int* settings) {
     clean();
   }
 }
+
+void rubiksCube() {
+  //0 = right 1 = left 2 = front 3 = back 4 = top 5 =bottom faces
+  int faceStickers[6][3][3];
+//  int leftFaceStickers[3][3];
+//  int frontFaceStickers[3][3];
+//  int backFaceStickers[3][3];
+//  int topFaceStickers[3][3];
+//  int bottomFaceStickers[3][3];
+  for (int i = 0; i < 6; i++){
+    for (int j=0; j< 3; j++) {
+       for (int k=0; j< 3; j++) {
+      faceStickers[i][j][k] = random(6);
+       }
+    }
+  }
+  displayRubiksCube(faceStickers);
+}
+
+void displayRubiksCube(int* stickers) {
+  
+}
+  // LED (y,x,z,r,g,b) if facing front
+//  int sidePositionFactor[6][3] = {
+// each 3 array represents xyz of a side and how to transform from front facing LEDS
+// 0 = always 0
+// 7 = always 7
+//1,2,3 = look at y,x,zrespectively of original coordinates toget this value
+//    {1,7,2},{1,0,2},{1,2,0},{1,2,7),{7,2,1},{0,2,1}
+//  }
+//0 yellow 1 white 2 orange 3 blue 4 green 5 red
+  int colorTranslator[6][3] = {{8,11,0},{15,15,15},{8,4,0},{0,0,15},{0,15,0},{15,0,0}};
+  int sideTransformFactors[6][3] = {{1,7,2},{1,0,2},{1,2,0},{1,2,7),{7,2,1},{0,2,1}};
+  
+  for (int i = 0; i < 6; i++){
+    for (int j=0; j< 3; j++) {
+       for (int k=0; j< 3; j++) {
+        LED(8,11,0)
+    }
+   }
+  }
+}
+
+
 
 void printMatrix(int* matrixToPrint, int len, int width) {
   int matrix[len][width];
