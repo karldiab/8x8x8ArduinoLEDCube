@@ -1625,48 +1625,54 @@ Serial.print("START LOOP currentRoutine ");Serial.println(currentRoutine);
       case 1 : 
       {
         rainVersionTwo(routineSettings[currentRoutine]);
+        clean(); 
         break;
       }
       case 2 : 
       {
-        //folder(routineSettings[currentRoutine]);
+        folder(routineSettings[currentRoutine]);
+        clean();
         break;
       }
       case 3 : 
       {
-        //sinwaveTwo();
+        sinwaveTwo();
+        clean();
         break;
       }
       case 4 : 
       {
-        //wipe_out();
+        wipe_out();
+        //displayTextRoutine(routineSettings[currentRoutine]);
         clean();
         break;
       }
       case 5 : 
       {
-        //bouncyvTwo();
+        glowingCube(routineSettings[currentRoutine]);
+        bouncyvTwo();
         break;
       }
       case 6 : 
       {
-        //color_wheelTWO();
+        color_wheelTWO();
         clean();
         break;
       }
       case 7 : 
       {
-        //harlem_shake();
+        harlem_shake();
         break;
       }
       case 8 :
       {
         dancingCube(routineSettings[currentRoutine]);
+        clean();
         break;
       }
       case 9 :
       {
-        //fireworks(20,15,0,routineSettings[currentRoutine]);
+        fireworks(20,15,0,routineSettings[currentRoutine]);
         break;
       }
       default : 
@@ -1955,7 +1961,7 @@ pinMode(blank_pin, OUTPUT);//moved down here so outputs are all off until the fi
 //*+*+*+*+*+*+*+*+*+*+*+*+PUT ANIMATIONS DOWN HERE*+*+*+*+*+*+*+*+*+*+*+*+PUT ANIMATIONS DOWN HERE*+*+*+*+*+*+*+*+*+*+*+*+PUT ANIMATIONS DOWN HERE
 //*+*+*+*+*+*+*+*+*+*+*+*+PUT ANIMATIONS DOWN HERE*+*+*+*+*+*+*+*+*+*+*+*+PUT ANIMATIONS DOWN HERE*+*+*+*+*+*+*+*+*+*+*+*+PUT ANIMATIONS DOWN HERE
 
-void dancingCube(int* settings) {
+void glowingCube(int* settings) {
   clean();
   int upOrDown;
   int iterations = 300 * pow(2,settings[0]);
@@ -1987,7 +1993,7 @@ void dancingCube(int* settings) {
     }
     for (int j = 0; j < numberOfFrames; j++) {
       if (edgeCurrentlyGlowing[j] != 0) {
-        Serial.print(edgeCurrentFrame[j][0]);Serial.print(",");Serial.print(edgeCurrentFrame[j][1]);Serial.print(",");Serial.print(edgeCurrentFrame[j][2]);Serial.print(",");Serial.print(edgeCurrentFrame[j][3]);Serial.print(",");Serial.print(edgeCurrentFrame[j][4]);Serial.print("+");Serial.println(edgeCurrentlyGlowing[j]);
+        //Serial.print(edgeCurrentFrame[j][0]);Serial.print(",");Serial.print(edgeCurrentFrame[j][1]);Serial.print(",");Serial.print(edgeCurrentFrame[j][2]);Serial.print(",");Serial.print(edgeCurrentFrame[j][3]);Serial.print(",");Serial.print(edgeCurrentFrame[j][4]);Serial.print("+");Serial.println(edgeCurrentlyGlowing[j]);
         if (edgeCurrentFrame[j][4] == 8) {
           LED(edgeCurrentFrame[j][0],edgeCurrentFrame[j][1],edgeCurrentFrame[j][2],0,0,0);
           edgeCurrentFrame[j][4] = 0;
@@ -2013,46 +2019,17 @@ void dancingCube(int* settings) {
         }
         edgeCurrentFrame[j][4]++;
       } else {
-        if (random(240) >= 245 - settings[1]) {
+        if (random(240) >= 243 - settings[1]) {
             edgeCurrentlyGlowing[j] = true;
         }
       }
     }
-    delay(100);
+    delay(50);
   }
   clean();
-  iterations = 20 * pow(2,settings[0]);
-  int numberOfPoints = sizeof(smallCube)/sizeof(smallCube[0]);
-  float cube[numberOfPoints][4];
-  float transformedCube[numberOfPoints][4];
-  for (int runs = 0; runs < iterations; runs++) {
-    int R = random(16), G = random(16), B = random(16);
-    if (interrupted) {
-      interruptRoutine(true);
-      return;
-    }
-    CopyFloatMatrix((float*)smallCube, numberOfPoints, 4, (float*)cube);
-    displayObject((float*) cube,numberOfPoints, R,G,B);
-    delay(100*pow(2,settings[1]-6));
-    int delayFactor = 50  *pow(2,settings[1]-6);
-    for (int i = 0; i < sizeof(dancingCubeTransforms)/sizeof(dancingCubeTransforms[0]); i++) {
-      if (interrupted) {
-        interruptRoutine(true);
-        return;
-      }
-      MultiplyFloatMatrix((float*)cube, (float*)dancingCubeTransforms[i], numberOfPoints, 4, 4, (float*)transformedCube);
-      
-      
-      drawLines((float*)transformedCube, (int*)cubeAdjacency, numberOfPoints,R,G,B);
-      drawLines((float*)cube, (int*)cubeAdjacency, numberOfPoints,0,0,0);
-      CopyFloatMatrix((float*)transformedCube, numberOfPoints, 4, (float*)cube);
-      delay(delayFactor);
-    }
-    clean();
-  }
 }
 
-void dancingCube2(int* settings) {
+void dancingCube(int* settings) {
   clean();
   int iterations = 20 * pow(2,settings[0]);
   int numberOfPoints = sizeof(smallCube)/sizeof(smallCube[0]);
