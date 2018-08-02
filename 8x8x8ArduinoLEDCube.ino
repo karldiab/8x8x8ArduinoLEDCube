@@ -2148,7 +2148,7 @@ void rubiksCube() {
   delay(5000);
 }
 
-    int colorTranslator[6][3] = {{7,15,0},{10,15,15},{10,4,0},{0,0,15},{0,15,0},{15,0,0}};
+    byte colorTranslator[6][3] = {{7,15,0},{10,15,15},{10,4,0},{0,0,15},{0,15,0},{15,0,0}};
 //0 = right 1 = left 2 = front 3 = back 4 = top 5 =bottom faces
   int sideDisplayTransforms[6][4][4] = {
     {{1,0,0,0},{0,0,1,0},{0,-1,0,0},{0,7,0,1}},
@@ -2177,7 +2177,7 @@ void rubiksCube() {
     }
   };
   //0 = right 1 = left 2 = front 3 = back 4 = top 5 =bottom faces
-  int originalStickersIndex[6][21] = {
+  byte originalStickersIndex[6][21] = {
     {0,1,2,3,4,5,6,7,8,20,23,26,27,30,33,38,41,44,47,50,53},
     {9,10,11,12,13,14,15,16,17,18,21,24,29,32,35,36,39,42,45,48,51},
     {18,19,20,21,22,23,24,25,26,0,3,6,11,14,17,42,43,44,45,46,47},
@@ -2186,7 +2186,7 @@ void rubiksCube() {
     {45,46,47,48,49,50,51,52,53,6,7,8,15,16,17,24,25,26,33,34,35}
   };
   //indexes to swap with if CW
-  int swapIndex[6][21] = {
+  byte swapIndex[6][21] = {
     {6,3,0,7,4,1,8,5,2,47,50,53,38,41,44,20,23,26,27,30,33},
     {15,12,9,16,13,10,17,14,11,36,39,42,45,48,51,29,32,35,18,21,24},
     {24,21,18,25,22,19,26,23,20,42,43,44,45,46,47,11,14,17,0,3,6},
@@ -2225,7 +2225,7 @@ void rotateCube(int* oldPositions, int* newPositions, int sideToRotate, bool CW)
   //precompute frames for animation
   //5 frames for animation, 84 LEDs are moving,4 ints for y,x,z,1
   int frames[4][84][4];
-  int LEDColors[21];
+  byte LEDColors[21];
   //21 stickers moving
   for (int i =0; i < 21; i++) {
      int LEDPositions[4][4];
