@@ -2115,7 +2115,7 @@ void rubiksCube() {
 //  printMatrix((int*)faceStickers[0],3,3);
   delay(2000);
   int newStickers[6][3][3];
-  int iterations = 20;
+  byte iterations = 20;
   int rotations[iterations];
   bool directions[iterations];
   for (int i = 0; i < iterations; i++) {
@@ -2262,12 +2262,19 @@ void rotateCube(int* oldPositions, int* newPositions, int sideToRotate, bool CW)
   }
    for (int i=0;i<3;i++) {
     //holder of float values before rounding to int
-    float frameData[84][4];
-    MultiplyIntAndFloatMatrix((int*)frames[0],(float*)rubiksRotations[sideToRotate][i],84,4,4,(float*)frameData);
-    for (int j = 0; j < 84; j++) {
+    float frameData[42][4];
+    MultiplyIntAndFloatMatrix((int*)frames[0],(float*)rubiksRotations[sideToRotate][i],42,4,4,(float*)frameData);
+    for (int j = 0; j < 42; j++) {
       for (int k = 0; k < 4; k++) {
         //round float to int
         frames[i+1][j][k] = (int)(frameData[j][k] + 0.5);
+      }
+     }
+    MultiplyIntAndFloatMatrix((int*)frames[0][42],(float*)rubiksRotations[sideToRotate][i],42,4,4,(float*)frameData);
+    for (int j = 42; j < 84; j++) {
+      for (int k = 0; k < 4; k++) {
+        //round float to int
+        frames[i+1][j][k] = (int)(frameData[j-42][k] + 0.5);
       }
      }
     }
