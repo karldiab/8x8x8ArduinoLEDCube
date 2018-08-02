@@ -177,12 +177,39 @@ int scrollingTextTransform[4][14][4][4] =
           {{1,0,0,0},{0,0,1,0},{0,-1,0,0},{0,7,-7,1}}
         }
       };
-//4 frames in animation, 4x4 transform matrix
-float topDownCWRotation[4][4][4] = {
+//rotation matrixes for rubiks animations spining CW
+//0 = right 1 = left 2 = front 3 = back 4 = top 5 =bottom faces
+float rubiksRotations[6][3][4][4] = {
+{
+  {{0.923879532,0,0.382683432,0},{0,1,0,0},{-0.382683432,0,0.923879532,0},{1.605813,0,-1.07297,1}},
+  {{0.707106781,0,0.707106781,0},{0,1,0,0},{-0.707106781,0,0.707106781,0},{3.5,0,0,1}},
+  {{0.382683432,0,0.9238795325,0},{0,1,0,0},{-0.9238795325,0,0.382683432,0},{5.394187,0,-1.07297,1}}
+},
+{
+  {{0.923879532,0,-0.382683432,0},{0,1,0,0},{0.382683432,0,0.923879532,0},{-1.07297,0,1.605813,1}},
+  {{0.707106781,0,-0.707106781,0},{0,1,0,0},{0.707106781,0,0.707106781,0},{0,0,3.5,1}},
+  {{0.382683432,0,-0.9238795325,0},{0,1,0,0},{0.9238795325,0,0.382683432,0},{-1.07297,0,5.394187,1}}
+},
+{
+  {{0.923879532,0.382683432,0,0},{-0.382683432,0.923879532,0,0},{0,0,1,0},{1.605813,-1.07297,0,1}},
+  {{0.707106781,0.707106781,0,0},{-0.707106781,0.707106781,0,0},{0,0,1,0},{3.5,-1.44975,0,1}},
+  {{0.382683432,0.9238795325,0,0},{-0.9238795325,0.382683432,0,0},{0,0,1,0},{5.394187,-1.07297,0,1}}
+},
+{
+  {{0.923879532,-0.382683432,0,0},{0.382683432,0.923879532,0,0},{0,0,1,0},{-1.07297,1.605813,0,1}},
+  {{0.707106781,-0.707106781,0,0},{0.707106781,0.707106781,0,0},{0,0,1,0},{-1.44975,3.5,0,1}},
+  {{0.382683432,-0.9238795325,0,0},{0.9238795325,0.382683432,0,0},{0,0,1,0},{-1.07297,5.394187,0,1}}
+},
+{
   {{1,0,0,0},{0,0.923879532,-0.382683432,0},{0,0.382683432,0.923879532},{0,-1.07297,1.605813,1}},
   {{1,0,0,0},{0,0.707106781,-0.707106781,0},{0,0.707106781,0.707106781},{0,-1.44975,3.5,1}},
-  {{1,0,0,0},{0,0.382683432,-0.9238795325,0},{0,0.9238795325,0.382683432},{0,-1.07297,-5.394187,1}},
-  {{1,0,0,0},{0,0,-1,0},{0,1,0,0},{0,0,7,1}}
+  {{1,0,0,0},{0,0.382683432,-0.9238795325,0},{0,0.9238795325,0.382683432},{0,-1.07297,5.394187,1}}
+},
+{
+  {{1,0,0,0},{0,0.923879532,0.382683432,0},{0,-0.382683432,0.923879532},{0,1.605813,-1.07297,1}},
+  {{1,0,0,0},{0,0.707106781,0.707106781,0},{0,-0.707106781,0.707106781},{0,3.5,-1.44975,1}},
+  {{1,0,0,0},{0,0.382683432,0.9238795325,0},{0,-0.9238795325,0.382683432},{0,5.394187,-1.07297,1}}
+}
 };
 float smallCube[8][4] = {
     {3,3,3,1},
@@ -1556,7 +1583,7 @@ for (int i = 0; i < numberOfRoutines; i++) {
 pinMode(buttonPin, INPUT);
 // Attach an interrupt to the ISR vector
 attachInterrupt(digitalPinToInterrupt(buttonPin), pin_ISR, FALLING);
-Serial.begin(9600); 
+//Serial.begin(9600); 
 SPI.setBitOrder(MSBFIRST);//Most Significant Bit First
 SPI.setDataMode(SPI_MODE0);// Mode 0 Rising edge of data, keep clock low
 // SPI.setClockDivider(SPI_CLOCK_DIV2);//Run the data in at 16MHz/2 - 8MHz
@@ -2084,15 +2111,41 @@ void rubiksCube() {
     }
   }
   displayRubiksCube((int*)faceStickers);
-  Serial.println("Original top");
-  printMatrix((int*)faceStickers[4],3,3);
-  delay(6000);
+//  Serial.println("Original right");
+//  printMatrix((int*)faceStickers[0],3,3);
+  delay(2000);
   int newStickers[6][3][3];
-  rotateTop((int*)faceStickers, (int*) newStickers, true);
-  displayRubiksCube((int*)newStickers);
-   Serial.println("New top");
-  printMatrix((int*)newStickers[4],3,3);
-  delay(6000);
+  int iterations = 20;
+  int rotations[iterations];
+  bool directions[iterations];
+  for (int i = 0; i < iterations; i++) {
+    rotations[i] = random(6);
+    directions[i] = random(1);
+    rotateCube((int*)faceStickers, (int*) newStickers, rotations[i], directions[i]);
+    for (int i=0; i< 6; i++) {
+      for (int j = 0; j < 3;j++) {
+        for (int k = 0; k < 3; k++) {
+          faceStickers[i][j][k] = newStickers[i][j][k];
+        }
+      }
+    }
+    rubiksCleanup();
+    displayRubiksCube((int*)newStickers);
+  }
+  for (int i = 0; i < iterations; i++) {
+    rotateCube((int*)faceStickers, (int*) newStickers, rotations[iterations-1-i], !directions[iterations-1-i]);
+    for (int i=0; i< 6; i++) {
+      for (int j = 0; j < 3;j++) {
+        for (int k = 0; k < 3; k++) {
+          faceStickers[i][j][k] = newStickers[i][j][k];
+        }
+      }
+    }
+    rubiksCleanup();
+    displayRubiksCube((int*)newStickers);
+    //delay(1000);
+  }
+  delay(5000);
 }
 
     int colorTranslator[6][3] = {{7,15,0},{10,15,15},{10,4,0},{0,0,15},{0,15,0},{15,0,0}};
@@ -2123,9 +2176,25 @@ void rubiksCube() {
       {{2,5,0,1},{2,6,0,1},{1,5,0,1},{1,6,0,1}}
     }
   };
-
+  //0 = right 1 = left 2 = front 3 = back 4 = top 5 =bottom faces
+  int originalStickersIndex[6][21] = {
+    {0,1,2,3,4,5,6,7,8,20,23,26,27,30,33,38,41,44,47,50,53},
+    {9,10,11,12,13,14,15,16,17,18,21,24,29,32,35,36,39,42,45,48,51},
+    {18,19,20,21,22,23,24,25,26,0,3,6,11,14,17,42,43,44,45,46,47},
+    {27,28,29,30,31,32,33,34,35,2,5,8,9,12,15,36,37,38,51,52,53},
+    {36,37,38,39,40,41,42,43,44,18,19,20,27,28,29,0,1,2,9,10,11},
+    {45,46,47,48,49,50,51,52,53,6,7,8,15,16,17,24,25,26,33,34,35}
+  };
+  //indexes to swap with if CW
+  int swapIndex[6][21] = {
+    {6,3,0,7,4,1,8,5,2,47,50,53,38,41,44,20,23,26,27,30,33},
+    {15,12,9,16,13,10,17,14,11,36,39,42,45,48,51,29,32,35,18,21,24},
+    {24,21,18,25,22,19,26,23,20,42,43,44,45,46,47,11,14,17,0,3,6},
+    {33,30,27,34,31,28,35,32,29,51,52,53,36,37,38,2,5,8,9,12,15},
+    {42,39,36,43,40,37,44,41,38,0,1,2,9,10,11,27,28,29,18,19,20},
+    {51,48,45,52,49,46,53,50,47,24,25,26,33,34,35,15,16,17,6,7,8}
+  };
 void displayRubiksCube(int* faceStickers) {
-  clean();
   for (int i = 0; i < 6; i++){
   for (int j=0; j< 3; j++) {
      for (int k=0; k< 3; k++) {
@@ -2143,33 +2212,99 @@ void displayRubiksCube(int* faceStickers) {
 }
 //faceStickers[6][3][3];
 //0 = right 1 = left 2 = front 3 = back 4 = top 5 =bottom faces
-void rotateTop(int* oldPositions, int* newPositions, bool CW) {
+void rotateCube(int* oldPositions, int* newPositions, int sideToRotate, bool CW) {
   for (int i = 0; i < 54; i++) {
     newPositions[i] = oldPositions[i];
   }
-  int originalStickersIndex[22] = {36,37,38,39,40,41,42,43,44,18,19,20,27,28,29,0,1,2,9,10,11};
-  //indexes to swap with if CW
-  int swapIndex[22] = {42,39,36,43,40,37,44,41,38,0,1,2,9,10,11,27,28,29,18,19,20};
-  for (int i =0; i < 22; i++) {
+  for (int i =0; i < 21; i++) {
     if (CW)
-      newPositions[originalStickersIndex[i]] = oldPositions[swapIndex[i]];
+      newPositions[originalStickersIndex[sideToRotate][i]] = oldPositions[swapIndex[sideToRotate][i]];
      else
-      newPositions[swapIndex[i]] = oldPositions[originalStickersIndex[i]];
+      newPositions[swapIndex[sideToRotate][i]] = oldPositions[originalStickersIndex[sideToRotate][i]];
   }
   //precompute frames for animation
-  //5 frames for animation, 72 LEDs are moving,4 ints for y,x,z,1
-  float frames[5][72][4];
-  int LEDColors[22];
-  //22 stickers moving
-  for (int i =0; i < 22; i++) {
+  //5 frames for animation, 84 LEDs are moving,4 ints for y,x,z,1
+  int frames[4][84][4];
+  int LEDColors[21];
+  //21 stickers moving
+  for (int i =0; i < 21; i++) {
      int LEDPositions[4][4];
-     MultiplyIntMatrix((int*)stickerLEDPositions[(originalStickersIndex[i]%9)/3][originalStickersIndex[i]%3], (int*)sideDisplayTransforms[originalStickersIndex[i]/9], 4,4,4, (int*)LEDPositions);
+     MultiplyIntMatrix((int*)stickerLEDPositions[(originalStickersIndex[sideToRotate][i]%9)/3][originalStickersIndex[sideToRotate][i]%3], (int*)sideDisplayTransforms[originalStickersIndex[sideToRotate][i]/9], 4,4,4, (int*)LEDPositions);
      for (int j=0;j<4;j++) {
-        frames[0][i*4+j] = LEDPositions[j];
-        LEDColors[i] = oldPositions[]
+      for (int k = 0; k < 4; k++) {
+          frames[0][i*4+j][k] = LEDPositions[j][k];
+          //originalFrame[i*4+j][k] = (float)LEDPositions[j][k];
+      }
+        LEDColors[i] = oldPositions[originalStickersIndex[sideToRotate][i]];
      }
   }
+  if (!CW) {
+    switch (sideToRotate) {
+      case 0:
+        sideToRotate = 1;
+        break;
+      case 1:
+        sideToRotate = 0;
+        break;
+      case 2:
+        sideToRotate = 3;
+        break;
+      case 3:
+        sideToRotate = 2;
+        break;
+      case 4:
+        sideToRotate = 5;
+        break;
+      case 5:
+        sideToRotate = 4;
+        break;
+    }
+  }
+   for (int i=0;i<3;i++) {
+    //holder of float values before rounding to int
+    float frameData[84][4];
+    MultiplyIntAndFloatMatrix((int*)frames[0],(float*)rubiksRotations[sideToRotate][i],84,4,4,(float*)frameData);
+    for (int j = 0; j < 84; j++) {
+      for (int k = 0; k < 4; k++) {
+        //round float to int
+        frames[i+1][j][k] = (int)(frameData[j][k] + 0.5);
+      }
+     }
+    }
+    for (int i = 0; i < 4; i++) {
+      if (i>0)
+        for (int j = 0; j < 84; j++) {
+          LED(frames[i-1][j][0],frames[i-1][j][1],frames[i-1][j][2],0,0,0);
+        }
+      for (int j = 0; j < 84; j++) {
+        LED(frames[i][j][0],frames[i][j][1],frames[i][j][2],colorTranslator[LEDColors[j/4]][0],colorTranslator[LEDColors[j/4]][1],colorTranslator[LEDColors[j/4]][2]);
+      }
+      delay(80);
+    }
+//LED(frames[0][i][0],frames[0][i][1],frames[0][i][2],colorTranslator[LEDColors[i/4]][0],colorTranslator[LEDColors[i/4]][1],colorTranslator[LEDColors[i/4]][2]);
   
+}
+void rubiksCleanup() {
+  for (int i = 0; i < 7; i++) {
+    LED(0,0,i,0,0,0);
+    LED(0,7,i,0,0,0);
+    LED(0,i,0,0,0,0);
+    LED(0,i,7,0,0,0);
+    LED(7,0,i,0,0,0);
+    LED(7,7,i,0,0,0);
+    LED(7,i,0,0,0,0);
+    LED(7,i,7,0,0,0);
+    LED(i,0,0,0,0,0);
+    LED(i,7,0,0,0,0);
+    LED(i,0,7,0,0,0);
+    LED(i,7,7,0,0,0);
+    if (i > 0)
+      for (int j = 1; j < 7; j++) {
+        for (int k = 1; k < 7; k++) {
+          LED(i,j,k,0,0,0);
+        }
+      }
+  }
 }
 
   // LED (y,x,z,r,g,b) if facing front
@@ -4094,6 +4229,23 @@ void MultiplyFloatMatrix(float* A, float* B, int m, int p, int n, float* C)
       C[n * i + j] = 0;
       for (k = 0; k < p; k++)
         C[n * i + j] = C[n * i + j] + A[p * i + k] * B[n * k + j];
+    }
+}
+void MultiplyIntAndFloatMatrix(int* A, float* B, int m, int p, int n, float* C)
+{
+  // A = input matrix (m x p)
+  // B = input matrix (p x n)
+  // m = number of rows in A
+  // p = number of columns in A = number of rows in B
+  // n = number of columns in B
+  // C = output matrix = A*B (m x n)
+  int i, j, k;
+  for (i = 0; i < m; i++)
+    for(j = 0; j < n; j++)
+    {
+      C[n * i + j] = 0;
+      for (k = 0; k < p; k++)
+        C[n * i + j] = C[n * i + j] + (float)A[p * i + k] * B[n * k + j];
     }
 }
 
