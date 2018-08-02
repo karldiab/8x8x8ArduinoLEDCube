@@ -177,6 +177,13 @@ int scrollingTextTransform[4][14][4][4] =
           {{1,0,0,0},{0,0,1,0},{0,-1,0,0},{0,7,-7,1}}
         }
       };
+//4 frames in animation, 4x4 transform matrix
+float topDownCWRotation[4][4][4] = {
+  {{1,0,0,0},{0,0.923879532,-0.382683432,0},{0,0.382683432,0.923879532},{0,-1.07297,1.605813,1}},
+  {{1,0,0,0},{0,0.707106781,-0.707106781,0},{0,0.707106781,0.707106781},{0,-1.44975,3.5,1}},
+  {{1,0,0,0},{0,0.382683432,-0.9238795325,0},{0,0.9238795325,0.382683432},{0,-1.07297,-5.394187,1}},
+  {{1,0,0,0},{0,0,-1,0},{0,1,0,0},{0,0,7,1}}
+};
 float smallCube[8][4] = {
     {3,3,3,1},
     {3,3,4,1},
@@ -2068,24 +2075,103 @@ void dancingCube(int* settings) {
 void rubiksCube() {
   //0 = right 1 = left 2 = front 3 = back 4 = top 5 =bottom faces
   int faceStickers[6][3][3];
-//  int leftFaceStickers[3][3];
-//  int frontFaceStickers[3][3];
-//  int backFaceStickers[3][3];
-//  int topFaceStickers[3][3];
-//  int bottomFaceStickers[3][3];
   for (int i = 0; i < 6; i++){
     for (int j=0; j< 3; j++) {
-       for (int k=0; j< 3; j++) {
-      faceStickers[i][j][k] = random(6);
+       for (int k=0; k< 3; k++) {
+      //faceStickers[i][j][k] = random(6);
+      faceStickers[i][j][k] = i;
        }
     }
   }
-  displayRubiksCube(faceStickers);
+  displayRubiksCube((int*)faceStickers);
+  Serial.println("Original top");
+  printMatrix((int*)faceStickers[4],3,3);
+  delay(6000);
+  int newStickers[6][3][3];
+  rotateTop((int*)faceStickers, (int*) newStickers, true);
+  displayRubiksCube((int*)newStickers);
+   Serial.println("New top");
+  printMatrix((int*)newStickers[4],3,3);
+  delay(6000);
 }
 
-void displayRubiksCube(int* stickers) {
+    int colorTranslator[6][3] = {{7,15,0},{10,15,15},{10,4,0},{0,0,15},{0,15,0},{15,0,0}};
+//0 = right 1 = left 2 = front 3 = back 4 = top 5 =bottom faces
+  int sideDisplayTransforms[6][4][4] = {
+    {{1,0,0,0},{0,0,1,0},{0,-1,0,0},{0,7,0,1}},
+    {{1,0,0,0},{0,0,-1,0},{0,1,0,0},{0,0,7,1}},
+    {{1,0,0,0},{0,1,0,0},{0,0,1,0},{0,0,0,1}},
+    {{1,0,0,0},{0,-1,0,0},{0,0,-1,0},{0,7,7,1}},
+    {{0,0,1,0},{0,1,0,0},{-1,0,0,0},{7,0,0,1}},
+    {{0,0,-1,0},{0,1,0,0},{1,0,0,0},{0,0,7,1}}
+  };
+  //row.position.LEDNo.xyz
+  int stickerLEDPositions[3][3][4][4] = {
+    {
+      {{6,1,0,1},{6,2,0,1},{5,1,0,1},{5,2,0,1}},
+      {{6,3,0,1},{6,4,0,1},{5,3,0,1},{5,4,0,1}},
+      {{6,5,0,1},{6,6,0,1},{5,5,0,1},{5,6,0,1}}
+    },
+    {
+      {{4,1,0,1},{4,2,0,1},{3,1,0,1},{3,2,0,1}},
+      {{4,3,0,1},{4,4,0,1},{3,3,0,1},{3,4,0,1}},
+      {{4,5,0,1},{4,6,0,1},{3,5,0,1},{3,6,0,1}}
+    },
+    {
+      {{2,1,0,1},{2,2,0,1},{1,1,0,1},{1,2,0,1}},
+      {{2,3,0,1},{2,4,0,1},{1,3,0,1},{1,4,0,1}},
+      {{2,5,0,1},{2,6,0,1},{1,5,0,1},{1,6,0,1}}
+    }
+  };
+
+void displayRubiksCube(int* faceStickers) {
+  clean();
+  for (int i = 0; i < 6; i++){
+  for (int j=0; j< 3; j++) {
+     for (int k=0; k< 3; k++) {
+        int LEDPositions[4][4];
+        MultiplyIntMatrix((int*)stickerLEDPositions[j][k], (int*)sideDisplayTransforms[i], 4,4,4, (int*)LEDPositions);
+        //delay(1000);
+        for (int l=0; l < 4; l++) {
+          int stickerColor = faceStickers[(9*i)+(3*j)+k];//faceStickers[i][j][k];
+          LED(LEDPositions[l][0],LEDPositions[l][1],LEDPositions[l][2],colorTranslator[stickerColor][0],colorTranslator[stickerColor][1],colorTranslator[stickerColor][2]);
+          //
+        }
+     }
+  }
+}
+}
+//faceStickers[6][3][3];
+//0 = right 1 = left 2 = front 3 = back 4 = top 5 =bottom faces
+void rotateTop(int* oldPositions, int* newPositions, bool CW) {
+  for (int i = 0; i < 54; i++) {
+    newPositions[i] = oldPositions[i];
+  }
+  int originalStickersIndex[22] = {36,37,38,39,40,41,42,43,44,18,19,20,27,28,29,0,1,2,9,10,11};
+  //indexes to swap with if CW
+  int swapIndex[22] = {42,39,36,43,40,37,44,41,38,0,1,2,9,10,11,27,28,29,18,19,20};
+  for (int i =0; i < 22; i++) {
+    if (CW)
+      newPositions[originalStickersIndex[i]] = oldPositions[swapIndex[i]];
+     else
+      newPositions[swapIndex[i]] = oldPositions[originalStickersIndex[i]];
+  }
+  //precompute frames for animation
+  //5 frames for animation, 72 LEDs are moving,4 ints for y,x,z,1
+  float frames[5][72][4];
+  int LEDColors[22];
+  //22 stickers moving
+  for (int i =0; i < 22; i++) {
+     int LEDPositions[4][4];
+     MultiplyIntMatrix((int*)stickerLEDPositions[(originalStickersIndex[i]%9)/3][originalStickersIndex[i]%3], (int*)sideDisplayTransforms[originalStickersIndex[i]/9], 4,4,4, (int*)LEDPositions);
+     for (int j=0;j<4;j++) {
+        frames[0][i*4+j] = LEDPositions[j];
+        LEDColors[i] = oldPositions[]
+     }
+  }
   
 }
+
   // LED (y,x,z,r,g,b) if facing front
 //  int sidePositionFactor[6][3] = {
 // each 3 array represents xyz of a side and how to transform from front facing LEDS
@@ -2095,18 +2181,6 @@ void displayRubiksCube(int* stickers) {
 //    {1,7,2},{1,0,2},{1,2,0},{1,2,7),{7,2,1},{0,2,1}
 //  }
 //0 yellow 1 white 2 orange 3 blue 4 green 5 red
-  int colorTranslator[6][3] = {{8,11,0},{15,15,15},{8,4,0},{0,0,15},{0,15,0},{15,0,0}};
-  int sideTransformFactors[6][3] = {{1,7,2},{1,0,2},{1,2,0},{1,2,7),{7,2,1},{0,2,1}};
-  
-  for (int i = 0; i < 6; i++){
-    for (int j=0; j< 3; j++) {
-       for (int k=0; j< 3; j++) {
-        LED(8,11,0)
-    }
-   }
-  }
-}
-
 
 
 void printMatrix(int* matrixToPrint, int len, int width) {
