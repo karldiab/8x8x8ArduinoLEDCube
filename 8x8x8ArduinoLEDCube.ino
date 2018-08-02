@@ -2299,10 +2299,11 @@ void rotateCube(int* oldPositions, int* newPositions, int sideToRotate, bool CW)
     }
    }
     for (int i = 0; i < 4; i++) {
-      if (i>0)
-        for (int j = 0; j < 84; j++) {
-          LED(frames[i-1][j][0],frames[i-1][j][1],frames[i-1][j][2],0,0,0);
-        }
+//      if (i>0)
+//        for (int j = 0; j < 84; j++) {
+//          LED(frames[i-1][j][0],frames[i-1][j][1],frames[i-1][j][2],0,0,0);
+//        }
+      rubiksCleanup();
       for (int j = 0; j < 84; j++) {
         LED(frames[i][j][0],frames[i][j][1],frames[i][j][2],colorTranslator[LEDColors[j/4]][0],colorTranslator[LEDColors[j/4]][1],colorTranslator[LEDColors[j/4]][2]);
       }
