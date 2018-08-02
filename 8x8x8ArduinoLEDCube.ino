@@ -1642,9 +1642,7 @@ interrupts();//let the show begin, this lets the multiplexing start
 
 void loop(){//***start loop***start loop***start loop***start loop***start loop***start loop***start loop***start loop***start loop
 //Serial.print("START LOOP currentRoutine ");Serial.println(currentRoutine);
-rubiksCube();
-//clean();
-return;
+
 //Each animation located in a sub routine
 // To control an LED, you simply:
 // LED(level you want 0-7, row you want 0-7, column you want 0-7, red brighness 0-15, green brighness 0-15, blue brighness 0-15);
@@ -1656,7 +1654,8 @@ return;
     switch (currentRoutine) {
       case 0 : 
       {
-        displayTextRoutine(routineSettings[currentRoutine]);
+        rubiksCube(routineSettings[currentRoutine]);
+        //displayTextRoutine(routineSettings[currentRoutine]);
         break;
       }
       case 1 : 
@@ -1687,7 +1686,7 @@ return;
       case 5 : 
       {
         glowingCube(routineSettings[currentRoutine]);
-        bouncyvTwo();
+        //bouncyvTwo();
         break;
       }
       case 6 : 
@@ -1698,12 +1697,12 @@ return;
       }
       case 7 : 
       {
-        harlem_shake();
+        //harlem_shake();
         break;
       }
       case 8 :
       {
-        dancingCube(routineSettings[currentRoutine]);
+        //dancingCube(routineSettings[currentRoutine]);
         clean();
         break;
       }
@@ -2099,7 +2098,7 @@ void dancingCube(int* settings) {
   }
 }
 
-void rubiksCube() {
+void rubiksCube(int* options) {
   //0 = right 1 = left 2 = front 3 = back 4 = top 5 =bottom faces
   int faceStickers[6][3][3];
   for (int i = 0; i < 6; i++){
@@ -2111,14 +2110,22 @@ void rubiksCube() {
     }
   }
   displayRubiksCube((int*)faceStickers);
-//  Serial.println("Original right");
-//  printMatrix((int*)faceStickers[0],3,3);
+  if (interrupted) {
+    interruptRoutine(true);
+    return;
+  }
   delay(2000);
   int newStickers[6][3][3];
-  byte iterations = 20;
+  byte iterations = random(40*(options[0]+1));
   int rotations[iterations];
   bool directions[iterations];
+  for (int x = 0; x < 5*(options[0]+1); x++) {
+    iterations = random(40*(options[0]+1));
   for (int i = 0; i < iterations; i++) {
+     if (interrupted) {
+      interruptRoutine(true);
+      return;
+    }
     rotations[i] = random(6);
     directions[i] = random(1);
     rotateCube((int*)faceStickers, (int*) newStickers, rotations[i], directions[i]);
@@ -2133,6 +2140,10 @@ void rubiksCube() {
     displayRubiksCube((int*)newStickers);
   }
   for (int i = 0; i < iterations; i++) {
+     if (interrupted) {
+      interruptRoutine(true);
+      return;
+    }
     rotateCube((int*)faceStickers, (int*) newStickers, rotations[iterations-1-i], !directions[iterations-1-i]);
     for (int i=0; i< 6; i++) {
       for (int j = 0; j < 3;j++) {
@@ -2146,6 +2157,8 @@ void rubiksCube() {
     //delay(1000);
   }
   delay(5000);
+  }
+  clean();
 }
 
     byte colorTranslator[6][3] = {{7,15,0},{10,15,15},{10,4,0},{0,0,15},{0,15,0},{15,0,0}};
