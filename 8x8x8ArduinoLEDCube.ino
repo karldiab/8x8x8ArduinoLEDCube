@@ -2262,22 +2262,17 @@ void rotateCube(int* oldPositions, int* newPositions, int sideToRotate, bool CW)
   }
    for (int i=0;i<3;i++) {
     //holder of float values before rounding to int
-    float frameData[42][4];
-    MultiplyIntAndFloatMatrix((int*)frames[0],(float*)rubiksRotations[sideToRotate][i],42,4,4,(float*)frameData);
-    for (int j = 0; j < 42; j++) {
-      for (int k = 0; k < 4; k++) {
-        //round float to int
-        frames[i+1][j][k] = (int)(frameData[j][k] + 0.5);
-      }
-     }
-    MultiplyIntAndFloatMatrix((int*)frames[0][42],(float*)rubiksRotations[sideToRotate][i],42,4,4,(float*)frameData);
-    for (int j = 42; j < 84; j++) {
-      for (int k = 0; k < 4; k++) {
-        //round float to int
-        frames[i+1][j][k] = (int)(frameData[j-42][k] + 0.5);
-      }
-     }
+    float frameData[21][4];
+    for (int x = 0; x < 4; x++) {
+      MultiplyIntAndFloatMatrix((int*)frames[0][x*21],(float*)rubiksRotations[sideToRotate][i],21,4,4,(float*)frameData);
+      for (int j = x*21; j < (x+1)*21; j++) {
+        for (int k = 0; k < 4; k++) {
+          //round float to int
+          frames[i+1][j][k] = (int)(frameData[j-(x*21)][k] + 0.5);
+        }
+       }
     }
+   }
     for (int i = 0; i < 4; i++) {
       if (i>0)
         for (int j = 0; j < 84; j++) {
@@ -2288,9 +2283,10 @@ void rotateCube(int* oldPositions, int* newPositions, int sideToRotate, bool CW)
       }
       delay(80);
     }
+}
 //LED(frames[0][i][0],frames[0][i][1],frames[0][i][2],colorTranslator[LEDColors[i/4]][0],colorTranslator[LEDColors[i/4]][1],colorTranslator[LEDColors[i/4]][2]);
   
-}
+
 void rubiksCleanup() {
   for (int i = 0; i < 7; i++) {
     LED(0,0,i,0,0,0);
