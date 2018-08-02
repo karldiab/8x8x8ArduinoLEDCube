@@ -32,7 +32,7 @@ int lastAnode;
 #define btnLEFT   3
 #define btnSELECT 4
 #define btnNONE   5
-#define numberOfRoutines 10
+#define numberOfRoutines 12
 //This holds the settings for each routine, there are 4 different settings, which each setting does it decided by the routine itself
 int routineSettings[numberOfRoutines][4];
 char* settingNames[4] = {"A", "B", "C", "D"};
@@ -103,8 +103,11 @@ int BAM_Bit, BAM_Counter=0; // Bit Angle Modulation variables to keep track of t
 //These variables can be used for other things
 unsigned long start;//for a millis timer to cycle through the animations
 //appealing sets of colors to use for various animations
-int colorSets[2][8][3] = {{{0, 5, 15},{0, 1, 9},{0, 0, 10},{1, 0, 11},{3, 0, 12},{10, 0, 15},{10, 0, 10},{10, 0, 1}},
-{{15, 15, 0},{10, 10, 0},{15, 5, 0},{15, 2, 0},{15, 1, 0},{15, 0, 0},{12, 0, 0},{10, 0, 0}}};
+byte numberOfColorSets = 2;
+int colorSets[2][8][3] = {
+  {{0, 5, 15},{0, 1, 9},{0, 0, 10},{1, 0, 11},{3, 0, 12},{10, 0, 15},{10, 0, 10},{10, 0, 1}},
+  {{15, 15, 0},{10, 10, 0},{15, 5, 0},{15, 2, 0},{15, 1, 0},{15, 0, 0},{12, 0, 0},{10, 0, 0}}
+ };
 String messages[4] = {"??????","XXXXXX","!!!!!!!!","BASS"};
 //Object transform variables
 int scrollingTextTransformSteps = 14;
@@ -1654,39 +1657,35 @@ void loop(){//***start loop***start loop***start loop***start loop***start loop*
     switch (currentRoutine) {
       case 0 : 
       {
-        rubiksCube(routineSettings[currentRoutine]);
         //displayTextRoutine(routineSettings[currentRoutine]);
         break;
       }
       case 1 : 
       {
-        rainVersionTwo(routineSettings[currentRoutine]);
-        clean(); 
+        rubiksCube(routineSettings[currentRoutine]);
         break;
       }
       case 2 : 
       {
-        folder(routineSettings[currentRoutine]);
-        clean();
+        rainVersionTwo(routineSettings[currentRoutine]);
+        clean(); 
         break;
       }
       case 3 : 
       {
-        sinwaveTwo();
+        folder(routineSettings[currentRoutine]);
         clean();
         break;
       }
       case 4 : 
       {
         wipe_out();
-        //displayTextRoutine(routineSettings[currentRoutine]);
         clean();
         break;
       }
       case 5 : 
       {
         glowingCube(routineSettings[currentRoutine]);
-        //bouncyvTwo();
         break;
       }
       case 6 : 
@@ -1697,11 +1696,13 @@ void loop(){//***start loop***start loop***start loop***start loop***start loop*
       }
       case 7 : 
       {
-        //harlem_shake();
+        harlem_shake();
+        clean();
         break;
       }
       case 8 :
       {
+        bouncyvTwo();
         //dancingCube(routineSettings[currentRoutine]);
         clean();
         break;
@@ -1710,6 +1711,16 @@ void loop(){//***start loop***start loop***start loop***start loop***start loop*
       {
         fireworks(20,15,0,routineSettings[currentRoutine]);
         break;
+      }
+      case 10 : 
+      {
+        displayColoredQuestionMark();
+        break;
+      }
+      case 11 :
+      {
+        sinwaveTwo();
+        clean();
       }
       default : 
       {
@@ -2072,7 +2083,7 @@ void dancingCube(int* settings) {
   float cube[numberOfPoints][4];
   float transformedCube[numberOfPoints][4];
   for (int runs = 0; runs < iterations; runs++) {
-    int R = random(16), G = random(16), B = random(16);
+    byte R = random(16), G = random(16), B = random(16);
     if (interrupted) {
       interruptRoutine(true);
       return;
@@ -2116,11 +2127,12 @@ void rubiksCube(int* options) {
   }
   delay(2000);
   int newStickers[6][3][3];
-  byte iterations = random(40*(options[0]+1));
-  int rotations[iterations];
-  bool directions[iterations];
+  byte iterations = random(40);
+  int rotations[40];
+  bool directions[40];
   for (int x = 0; x < 5*(options[0]+1); x++) {
-    iterations = random(40*(options[0]+1));
+    iterations = random(40);
+  int rotations[40];
   for (int i = 0; i < iterations; i++) {
      if (interrupted) {
       interruptRoutine(true);
@@ -2161,7 +2173,7 @@ void rubiksCube(int* options) {
   clean();
 }
 
-    byte colorTranslator[6][3] = {{7,15,0},{10,15,15},{10,4,0},{0,0,15},{0,15,0},{15,0,0}};
+    byte colorTranslator[6][3] = {{7,15,0},{8,15,15},{10,4,0},{0,0,15},{0,15,0},{15,0,0}};
 //0 = right 1 = left 2 = front 3 = back 4 = top 5 =bottom faces
   int sideDisplayTransforms[6][4][4] = {
     {{1,0,0,0},{0,0,1,0},{0,-1,0,0},{0,7,0,1}},
@@ -3590,8 +3602,7 @@ void color_wheelTWO(){//*****colorWheelTwo*****colorWheelTwo*****colorWheelTwo**
 void harlem_shake(){
   
   
-  
-int greenx = random(1,7),greeny = random(1,7),bluex = random(1,7),bluey = random(1,7),redx = random(1,7),redy = random(1,7);
+byte greenx = random(1,7),greeny = random(1,7),bluex = random(1,7),bluey = random(1,7),redx = random(1,7),redy = random(1,7);
 int greenmult=1, bluemult=1, redmult=1;
 int greenmulty=1, bluemulty=1, redmulty=1;
 int oredx, oredy,obluex,obluey,ogreenx,ogreeny, cb1=15,cb2=0,cr1=15,cr2=0,cg1=15,cg2=0;
@@ -3656,7 +3667,6 @@ for(counter=0; counter<85; counter++){
   ogreeny=greeny;
   oredx=redx;
   oredy=redy;
-  
 for(i=100; i>time_counter; i--)
   delay(1);
 
@@ -3714,7 +3724,6 @@ for(counter=0; counter<85; counter++){
   obluey=bluey;
   oredx=redx;
   oredy=redy;
-  
 for(i=100; i>time_counter; i--)
   delay(1);
 
@@ -3811,7 +3820,6 @@ for(counter=0; counter<3; counter++){ // counter was 3
       return;
     }
 clean(); 
-
 // this is the random changing led colour full cube
 
 
@@ -3835,7 +3843,6 @@ for(m=0; m<20; m++){
   
   
 clean();
-
 
 color_select=random(0,3);
 if(color_select==0){
@@ -3974,7 +3981,6 @@ LED(x2+1,y2-1,z2-1,c21,c22,c23);
 LED(x2-1,y2+1,z2-1,c21,c22,c23);
 LED(x2-1,y2-1,z2-1,c21,c22,c23);
 
-
     if (interrupted) {
       interruptRoutine(true);
       return;
@@ -4047,7 +4053,6 @@ z2mult=random(0,2);
 }//counter  counter counter counter counter
 
 
-
 for(counter=0; counter<15; counter++){
   color_select=random(0,3);
 if(color_select==0){
@@ -4075,7 +4080,6 @@ num2++;
 num3++;
 num4++;
 
-
 for(i=3; i<5; i++){
 LED(num1, i,3,0,0,0);
 LED(num1, 3,i,0,0,0);
@@ -4094,6 +4098,7 @@ LED(num2, 2,i,0,0,0);
 LED(num2, 5,i,0,0,0);
 LED(num2, i,5,0,0,0);
 }
+return;
 for(i=2; i<6; i++){
 LED(num2+1, i,2,c1,c2,c3);
 LED(num2+1, 2,i,c1,c2,c3);
@@ -4126,7 +4131,6 @@ LED(num4+1, i,7,c1,c2,c3);
 }
 //delay(1);
 }//m
-
 num1=8;
 num2=11;
 num3=13;
@@ -4411,6 +4415,49 @@ void displaySolidLetter(char c,int R, int G, int B) {
     }
   }
  }
+void displayColoredQuestionMark() {
+char display[8];// = font_data[c];
+int j = 7;
+int colorSet = random(1);
+byte font_data[8] = {0x3C,  0x66,  0x06,  0x1C,  0x18,  0x00,  0x18,0x18 };
+for (int i = 0; i < 8; i++) {
+  //display[0] = 0x00;
+  display[i] = font_data[j];
+  j--;
+}
+for (int x = 0; x < 50; x++) {
+    if (interrupted) {
+      interruptRoutine(true);
+      return;
+    }
+  for (int level = 0; level < 8; level++) {
+  int row = 0;
+  //reverseCounter is used to horizonally flip the chars on opposite sides of the cube
+  int reverseCounter = 7;
+  for (unsigned int mask = 0x80; mask != 0; mask >>= 1) {
+      if (display[level] & mask) {
+        //bit is 1
+          LED(level,row,0,colorSets[colorSet][level][0],colorSets[colorSet][level][1],colorSets[colorSet][level][2]);
+          LED(level,reverseCounter,7,colorSets[colorSet][level][0],colorSets[colorSet][level][1],colorSets[colorSet][level][2]);
+          LED(level,0,reverseCounter,colorSets[colorSet][level][0],colorSets[colorSet][level][1],colorSets[colorSet][level][2]);
+          LED(level,7,row,colorSets[colorSet][level][0],colorSets[colorSet][level][1],colorSets[colorSet][level][2]);
+      }
+      else {
+          // bit is 0
+          LED(level,row,0,0,0,0);
+          LED(level,reverseCounter,7,0,0,0);
+          LED(level,0,reverseCounter,0,0,0);
+          LED(level,7,row,0,0,0);
+      }
+      row++;
+      reverseCounter--;
+  }
+}
+delay(2000);
+colorSet = random(numberOfColorSets);
+}
+clean();
+}
  void displaySolidColoredLetter(char c,int colorSet) {
   char display[8];// = font_data[c];
   int j = 7;
