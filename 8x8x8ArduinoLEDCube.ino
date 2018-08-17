@@ -32,7 +32,7 @@ int lastAnode;
 #define btnLEFT   3
 #define btnSELECT 4
 #define btnNONE   5
-#define numberOfRoutines 10
+#define numberOfRoutines 12
 //This holds the settings for each routine, there are 4 different settings, which each setting does it decided by the routine itself
 int routineSettings[numberOfRoutines][4];
 char* settingNames[4] = {"A", "B", "C", "D"};
@@ -103,13 +103,18 @@ int BAM_Bit, BAM_Counter=0; // Bit Angle Modulation variables to keep track of t
 //These variables can be used for other things
 unsigned long start;//for a millis timer to cycle through the animations
 //appealing sets of colors to use for various animations
-int colorSets[2][8][3] = {{{0, 5, 15},{0, 1, 9},{0, 0, 10},{1, 0, 11},{3, 0, 12},{10, 0, 15},{10, 0, 10},{10, 0, 1}},
-{{15, 15, 0},{10, 10, 0},{15, 5, 0},{15, 2, 0},{15, 1, 0},{15, 0, 0},{12, 0, 0},{10, 0, 0}}};
+byte numberOfColorSets = 3;
+int colorSets[3][8][3] = {
+  {{0, 5, 15},{0, 1, 9},{0, 0, 10},{1, 0, 11},{3, 0, 12},{10, 0, 15},{10, 0, 10},{10, 0, 1}},
+  {{15, 15, 0},{10, 10, 0},{15, 5, 0},{15, 2, 0},{15, 1, 0},{15, 0, 0},{12, 0, 0},{10, 0, 0}},
+  {{15, 0, 0},{15, 6, 0},{15, 15, 0},{9, 14, 0},{0, 15, 0},{0, 15, 15},{0, 0, 15},{6, 3, 15}}//rainbow
+ };
+byte numberOfMessages = 4;
 String messages[4] = {"??????","XXXXXX","!!!!!!!!","BASS"};
 //Object transform variables
-int scrollingTextTransformSteps = 14;
-int scrollingTestStepsTillCleared = 8;
-int scrollingTextTransformObjects = 4;
+byte scrollingTextTransformSteps = 14;
+byte scrollingTestStepsTillCleared = 8;
+byte scrollingTextTransformObjects = 4;
 int scrollingTextTransform[4][14][4][4] = 
       {
         {
@@ -161,6 +166,7 @@ int scrollingTextTransform[4][14][4][4] =
           {{1,0,0,0},{0,0,1,0},{0,-1,0,0},{0,7,-7,1}}
         },
         {
+<<<<<<< HEAD
           {{1,0,0,0},{0,-1,0,0},{0,0,-1,0},{0,2,7,1}},
           {{1,0,0,0},{0,-1,0,0},{0,0,-1,0},{0,3,7,1}},
           {{1,0,0,0},{0,-1,0,0},{0,0,-1,0},{0,4,7,1}},
@@ -175,8 +181,58 @@ int scrollingTextTransform[4][14][4][4] =
           {{1,0,0,0},{0,-1,0,0},{0,0,-1,0},{0,13,7,1}},
           {{1,0,0,0},{0,-1,0,0},{0,0,-1,0},{0,14,-7,1}},
           {{1,0,0,0},{0,-1,0,0},{0,0,-1,0},{0,15,7,1}}
+=======
+          {{1,0,0,0},{0,-1,0,0},{0,0,1,0},{0,1,7,1}},
+          {{1,0,0,0},{0,-1,0,0},{0,0,1,0},{0,2,7,1}},
+          {{1,0,0,0},{0,-1,0,0},{0,0,1,0},{0,3,7,1}},
+          {{1,0,0,0},{0,-1,0,0},{0,0,1,0},{0,4,7,1}},
+          {{1,0,0,0},{0,-1,0,0},{0,0,1,0},{0,5,7,1}},
+          {{1,0,0,0},{0,-1,0,0},{0,0,1,0},{0,6,7,1}},
+          {{1,0,0,0},{0,-1,0,0},{0,0,1,0},{0,7,7,1}},
+          {{1,0,0,0},{0,-1,0,0},{0,0,1,0},{0,8,7,1}},
+          {{1,0,0,0},{0,-1,0,0},{0,0,1,0},{0,9,7,1}},
+          {{1,0,0,0},{0,-1,0,0},{0,0,1,0},{0,10,7,1}},
+          {{1,0,0,0},{0,-1,0,0},{0,0,1,0},{0,11,7,1}},
+          {{1,0,0,0},{0,-1,0,0},{0,0,1,0},{0,12,7,1}},
+          {{1,0,0,0},{0,-1,0,0},{0,0,1,0},{0,13,7,1}},
+          {{1,0,0,0},{0,-1,0,0},{0,0,1,0},{0,14,7,1}}
+>>>>>>> rubiksDev
         }
       };
+//rotation matrixes for rubiks animations spining CW
+//0 = right 1 = left 2 = front 3 = back 4 = top 5 =bottom faces
+float rubiksRotations[6][3][4][4] = {
+{
+  {{0.923879532,0,0.382683432,0},{0,1,0,0},{-0.382683432,0,0.923879532,0},{1.605813,0,-1.07297,1}},
+  {{0.707106781,0,0.707106781,0},{0,1,0,0},{-0.707106781,0,0.707106781,0},{3.5,0,0,1}},
+  {{0.382683432,0,0.9238795325,0},{0,1,0,0},{-0.9238795325,0,0.382683432,0},{5.394187,0,-1.07297,1}}
+},
+{
+  {{0.923879532,0,-0.382683432,0},{0,1,0,0},{0.382683432,0,0.923879532,0},{-1.07297,0,1.605813,1}},
+  {{0.707106781,0,-0.707106781,0},{0,1,0,0},{0.707106781,0,0.707106781,0},{0,0,3.5,1}},
+  {{0.382683432,0,-0.9238795325,0},{0,1,0,0},{0.9238795325,0,0.382683432,0},{-1.07297,0,5.394187,1}}
+},
+{
+  {{0.923879532,0.382683432,0,0},{-0.382683432,0.923879532,0,0},{0,0,1,0},{1.605813,-1.07297,0,1}},
+  {{0.707106781,0.707106781,0,0},{-0.707106781,0.707106781,0,0},{0,0,1,0},{3.5,-1.44975,0,1}},
+  {{0.382683432,0.9238795325,0,0},{-0.9238795325,0.382683432,0,0},{0,0,1,0},{5.394187,-1.07297,0,1}}
+},
+{
+  {{0.923879532,-0.382683432,0,0},{0.382683432,0.923879532,0,0},{0,0,1,0},{-1.07297,1.605813,0,1}},
+  {{0.707106781,-0.707106781,0,0},{0.707106781,0.707106781,0,0},{0,0,1,0},{-1.44975,3.5,0,1}},
+  {{0.382683432,-0.9238795325,0,0},{0.9238795325,0.382683432,0,0},{0,0,1,0},{-1.07297,5.394187,0,1}}
+},
+{
+  {{1,0,0,0},{0,0.923879532,-0.382683432,0},{0,0.382683432,0.923879532},{0,-1.07297,1.605813,1}},
+  {{1,0,0,0},{0,0.707106781,-0.707106781,0},{0,0.707106781,0.707106781},{0,-1.44975,3.5,1}},
+  {{1,0,0,0},{0,0.382683432,-0.9238795325,0},{0,0.9238795325,0.382683432},{0,-1.07297,5.394187,1}}
+},
+{
+  {{1,0,0,0},{0,0.923879532,0.382683432,0},{0,-0.382683432,0.923879532},{0,1.605813,-1.07297,1}},
+  {{1,0,0,0},{0,0.707106781,0.707106781,0},{0,-0.707106781,0.707106781},{0,3.5,-1.44975,1}},
+  {{1,0,0,0},{0,0.382683432,0.9238795325,0},{0,-0.9238795325,0.382683432},{0,5.394187,-1.07297,1}}
+}
+};
 float smallCube[8][4] = {
     {3,3,3,1},
     {3,3,4,1},
@@ -1549,7 +1605,7 @@ for (int i = 0; i < numberOfRoutines; i++) {
 pinMode(buttonPin, INPUT);
 // Attach an interrupt to the ISR vector
 attachInterrupt(digitalPinToInterrupt(buttonPin), pin_ISR, FALLING);
-Serial.begin(9600); 
+//Serial.begin(9600); 
 SPI.setBitOrder(MSBFIRST);//Most Significant Bit First
 SPI.setDataMode(SPI_MODE0);// Mode 0 Rising edge of data, keep clock low
 // SPI.setClockDivider(SPI_CLOCK_DIV2);//Run the data in at 16MHz/2 - 8MHz
@@ -1602,7 +1658,7 @@ pinMode(layer8, OUTPUT);
 
 SPI.begin();//start up the SPI library
 interrupts();//let the show begin, this lets the multiplexing start
-
+randomSeed(analogRead(1));
 }//***end setup***end setup***end setup***end setup***end setup***end setup***end setup***end setup***end setup***end setup
 
 
@@ -1619,38 +1675,36 @@ void loop(){//***start loop***start loop***start loop***start loop***start loop*
     switch (currentRoutine) {
       case 0 : 
       {
-        displayTextRoutine(routineSettings[currentRoutine]);
+        //displayTextRoutine(routineSettings[currentRoutine]);
         break;
       }
       case 1 : 
+      {
+        //rubiksCube(routineSettings[currentRoutine]);
+        displayTextRoutine(routineSettings[currentRoutine]);
+        break;
+      }
+      case 2 : 
       {
         rainVersionTwo(routineSettings[currentRoutine]);
         clean(); 
         break;
       }
-      case 2 : 
-      {
-        folder(routineSettings[currentRoutine]);
-        clean();
-        break;
-      }
       case 3 : 
       {
-        sinwaveTwo();
+        folder(routineSettings[currentRoutine]);
         clean();
         break;
       }
       case 4 : 
       {
         wipe_out();
-        //displayTextRoutine(routineSettings[currentRoutine]);
         clean();
         break;
       }
       case 5 : 
       {
         glowingCube(routineSettings[currentRoutine]);
-        bouncyvTwo();
         break;
       }
       case 6 : 
@@ -1662,18 +1716,29 @@ void loop(){//***start loop***start loop***start loop***start loop***start loop*
       case 7 : 
       {
         harlem_shake();
+        clean();
         break;
       }
       case 8 :
       {
-        dancingCube(routineSettings[currentRoutine]);
+        bouncyvTwo();
         clean();
         break;
       }
       case 9 :
       {
-        fireworks(20,15,0,routineSettings[currentRoutine]);
+        fireworks(40,15,0,routineSettings[currentRoutine]);
         break;
+      }
+      case 10 : 
+      {
+        dancingCube(routineSettings[currentRoutine]);
+        break;
+      }
+      case 11 :
+      {
+        sinwaveTwo();
+        clean();
       }
       default : 
       {
@@ -1964,7 +2029,7 @@ pinMode(blank_pin, OUTPUT);//moved down here so outputs are all off until the fi
 void glowingCube(int* settings) {
   clean();
   int upOrDown;
-  int iterations = 300 * pow(2,settings[0]);
+  int iterations = 500 * pow(2,settings[0]);
   int numberOfFrames = 17;
   bool edgeCurrentlyGlowing[numberOfFrames] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
   //first 3 items are xyz of current glow location, 4th item indicates whether its x y or z that changes, 5th is which frame edge is currently on, 6th is direction of travel
@@ -2036,7 +2101,7 @@ void dancingCube(int* settings) {
   float cube[numberOfPoints][4];
   float transformedCube[numberOfPoints][4];
   for (int runs = 0; runs < iterations; runs++) {
-    int R = random(16), G = random(16), B = random(16);
+    byte R = random(16), G = random(16), B = random(16);
     if (interrupted) {
       interruptRoutine(true);
       return;
@@ -2061,6 +2126,244 @@ void dancingCube(int* settings) {
     clean();
   }
 }
+
+void rubiksCube(int* options) {
+  //0 = right 1 = left 2 = front 3 = back 4 = top 5 =bottom faces
+  int faceStickers[6][3][3];
+  for (int i = 0; i < 6; i++){
+    for (int j=0; j< 3; j++) {
+       for (int k=0; k< 3; k++) {
+      //faceStickers[i][j][k] = random(6);
+      faceStickers[i][j][k] = i;
+       }
+    }
+  }
+  displayRubiksCube((int*)faceStickers);
+  if (interrupted) {
+    interruptRoutine(true);
+    return;
+  }
+  delay(2000);
+  int newStickers[6][3][3];
+  byte iterations = random(40);
+  int rotations[40];
+  bool directions[40];
+  for (int x = 0; x < 5*(options[0]+1); x++) {
+    iterations = random(40);
+  int rotations[40];
+  for (int i = 0; i < iterations; i++) {
+     if (interrupted) {
+      interruptRoutine(true);
+      return;
+    }
+    rotations[i] = random(6);
+    directions[i] = random(1);
+    rotateCube((int*)faceStickers, (int*) newStickers, rotations[i], directions[i]);
+    for (int i=0; i< 6; i++) {
+      for (int j = 0; j < 3;j++) {
+        for (int k = 0; k < 3; k++) {
+          faceStickers[i][j][k] = newStickers[i][j][k];
+        }
+      }
+    }
+    rubiksCleanup();
+    displayRubiksCube((int*)newStickers);
+  }
+  for (int i = 0; i < iterations; i++) {
+     if (interrupted) {
+      interruptRoutine(true);
+      return;
+    }
+    rotateCube((int*)faceStickers, (int*) newStickers, rotations[iterations-1-i], !directions[iterations-1-i]);
+    for (int i=0; i< 6; i++) {
+      for (int j = 0; j < 3;j++) {
+        for (int k = 0; k < 3; k++) {
+          faceStickers[i][j][k] = newStickers[i][j][k];
+        }
+      }
+    }
+    rubiksCleanup();
+    displayRubiksCube((int*)newStickers);
+    //delay(1000);
+  }
+  delay(5000);
+  }
+  clean();
+}
+
+    byte colorTranslator[6][3] = {{7,15,0},{8,15,15},{10,4,0},{0,0,15},{0,15,0},{15,0,0}};
+//0 = right 1 = left 2 = front 3 = back 4 = top 5 =bottom faces
+  int sideDisplayTransforms[6][4][4] = {
+    {{1,0,0,0},{0,0,1,0},{0,-1,0,0},{0,7,0,1}},
+    {{1,0,0,0},{0,0,-1,0},{0,1,0,0},{0,0,7,1}},
+    {{1,0,0,0},{0,1,0,0},{0,0,1,0},{0,0,0,1}},
+    {{1,0,0,0},{0,-1,0,0},{0,0,-1,0},{0,7,7,1}},
+    {{0,0,1,0},{0,1,0,0},{-1,0,0,0},{7,0,0,1}},
+    {{0,0,-1,0},{0,1,0,0},{1,0,0,0},{0,0,7,1}}
+  };
+  //row.position.LEDNo.xyz
+  int stickerLEDPositions[3][3][4][4] = {
+    {
+      {{6,1,0,1},{6,2,0,1},{5,1,0,1},{5,2,0,1}},
+      {{6,3,0,1},{6,4,0,1},{5,3,0,1},{5,4,0,1}},
+      {{6,5,0,1},{6,6,0,1},{5,5,0,1},{5,6,0,1}}
+    },
+    {
+      {{4,1,0,1},{4,2,0,1},{3,1,0,1},{3,2,0,1}},
+      {{4,3,0,1},{4,4,0,1},{3,3,0,1},{3,4,0,1}},
+      {{4,5,0,1},{4,6,0,1},{3,5,0,1},{3,6,0,1}}
+    },
+    {
+      {{2,1,0,1},{2,2,0,1},{1,1,0,1},{1,2,0,1}},
+      {{2,3,0,1},{2,4,0,1},{1,3,0,1},{1,4,0,1}},
+      {{2,5,0,1},{2,6,0,1},{1,5,0,1},{1,6,0,1}}
+    }
+  };
+  //0 = right 1 = left 2 = front 3 = back 4 = top 5 =bottom faces
+  byte originalStickersIndex[6][21] = {
+    {0,1,2,3,4,5,6,7,8,20,23,26,27,30,33,38,41,44,47,50,53},
+    {9,10,11,12,13,14,15,16,17,18,21,24,29,32,35,36,39,42,45,48,51},
+    {18,19,20,21,22,23,24,25,26,0,3,6,11,14,17,42,43,44,45,46,47},
+    {27,28,29,30,31,32,33,34,35,2,5,8,9,12,15,36,37,38,51,52,53},
+    {36,37,38,39,40,41,42,43,44,18,19,20,27,28,29,0,1,2,9,10,11},
+    {45,46,47,48,49,50,51,52,53,6,7,8,15,16,17,24,25,26,33,34,35}
+  };
+  //indexes to swap with if CW
+  byte swapIndex[6][21] = {
+    {6,3,0,7,4,1,8,5,2,47,50,53,38,41,44,20,23,26,27,30,33},
+    {15,12,9,16,13,10,17,14,11,36,39,42,45,48,51,29,32,35,18,21,24},
+    {24,21,18,25,22,19,26,23,20,42,43,44,45,46,47,11,14,17,0,3,6},
+    {33,30,27,34,31,28,35,32,29,51,52,53,36,37,38,2,5,8,9,12,15},
+    {42,39,36,43,40,37,44,41,38,0,1,2,9,10,11,27,28,29,18,19,20},
+    {51,48,45,52,49,46,53,50,47,24,25,26,33,34,35,15,16,17,6,7,8}
+  };
+void displayRubiksCube(int* faceStickers) {
+  for (int i = 0; i < 6; i++){
+  for (int j=0; j< 3; j++) {
+     for (int k=0; k< 3; k++) {
+        int LEDPositions[4][4];
+        MultiplyIntMatrix((int*)stickerLEDPositions[j][k], (int*)sideDisplayTransforms[i], 4,4,4, (int*)LEDPositions);
+        //delay(1000);
+        for (int l=0; l < 4; l++) {
+          int stickerColor = faceStickers[(9*i)+(3*j)+k];//faceStickers[i][j][k];
+          LED(LEDPositions[l][0],LEDPositions[l][1],LEDPositions[l][2],colorTranslator[stickerColor][0],colorTranslator[stickerColor][1],colorTranslator[stickerColor][2]);
+          //
+        }
+     }
+  }
+}
+}
+//faceStickers[6][3][3];
+//0 = right 1 = left 2 = front 3 = back 4 = top 5 =bottom faces
+void rotateCube(int* oldPositions, int* newPositions, int sideToRotate, bool CW) {
+  for (int i = 0; i < 54; i++) {
+    newPositions[i] = oldPositions[i];
+  }
+  for (int i =0; i < 21; i++) {
+    if (CW)
+      newPositions[originalStickersIndex[sideToRotate][i]] = oldPositions[swapIndex[sideToRotate][i]];
+     else
+      newPositions[swapIndex[sideToRotate][i]] = oldPositions[originalStickersIndex[sideToRotate][i]];
+  }
+  //precompute frames for animation
+  //5 frames for animation, 84 LEDs are moving,4 ints for y,x,z,1
+  int frames[4][84][4];
+  byte LEDColors[21];
+  //21 stickers moving
+  for (int i =0; i < 21; i++) {
+     int LEDPositions[4][4];
+     MultiplyIntMatrix((int*)stickerLEDPositions[(originalStickersIndex[sideToRotate][i]%9)/3][originalStickersIndex[sideToRotate][i]%3], (int*)sideDisplayTransforms[originalStickersIndex[sideToRotate][i]/9], 4,4,4, (int*)LEDPositions);
+     for (int j=0;j<4;j++) {
+      for (int k = 0; k < 4; k++) {
+          frames[0][i*4+j][k] = LEDPositions[j][k];
+          //originalFrame[i*4+j][k] = (float)LEDPositions[j][k];
+      }
+        LEDColors[i] = oldPositions[originalStickersIndex[sideToRotate][i]];
+     }
+  }
+  if (!CW) {
+    switch (sideToRotate) {
+      case 0:
+        sideToRotate = 1;
+        break;
+      case 1:
+        sideToRotate = 0;
+        break;
+      case 2:
+        sideToRotate = 3;
+        break;
+      case 3:
+        sideToRotate = 2;
+        break;
+      case 4:
+        sideToRotate = 5;
+        break;
+      case 5:
+        sideToRotate = 4;
+        break;
+    }
+  }
+   for (int i=0;i<3;i++) {
+    //holder of float values before rounding to int
+    float frameData[21][4];
+    for (int x = 0; x < 4; x++) {
+      MultiplyIntAndFloatMatrix((int*)frames[0][x*21],(float*)rubiksRotations[sideToRotate][i],21,4,4,(float*)frameData);
+      for (int j = x*21; j < (x+1)*21; j++) {
+        for (int k = 0; k < 4; k++) {
+          //round float to int
+          frames[i+1][j][k] = (int)(frameData[j-(x*21)][k] + 0.5);
+        }
+       }
+    }
+   }
+    for (int i = 0; i < 4; i++) {
+//      if (i>0)
+//        for (int j = 0; j < 84; j++) {
+//          LED(frames[i-1][j][0],frames[i-1][j][1],frames[i-1][j][2],0,0,0);
+//        }
+      rubiksCleanup();
+      for (int j = 0; j < 84; j++) {
+        LED(frames[i][j][0],frames[i][j][1],frames[i][j][2],colorTranslator[LEDColors[j/4]][0],colorTranslator[LEDColors[j/4]][1],colorTranslator[LEDColors[j/4]][2]);
+      }
+      delay(80);
+    }
+}
+//LED(frames[0][i][0],frames[0][i][1],frames[0][i][2],colorTranslator[LEDColors[i/4]][0],colorTranslator[LEDColors[i/4]][1],colorTranslator[LEDColors[i/4]][2]);
+  
+
+void rubiksCleanup() {
+  for (int i = 0; i < 7; i++) {
+    LED(0,0,i,0,0,0);
+    LED(0,7,i,0,0,0);
+    LED(0,i,0,0,0,0);
+    LED(0,i,7,0,0,0);
+    LED(7,0,i,0,0,0);
+    LED(7,7,i,0,0,0);
+    LED(7,i,0,0,0,0);
+    LED(7,i,7,0,0,0);
+    LED(i,0,0,0,0,0);
+    LED(i,7,0,0,0,0);
+    LED(i,0,7,0,0,0);
+    LED(i,7,7,0,0,0);
+    if (i > 0)
+      for (int j = 1; j < 7; j++) {
+        for (int k = 1; k < 7; k++) {
+          LED(i,j,k,0,0,0);
+        }
+      }
+  }
+}
+
+  // LED (y,x,z,r,g,b) if facing front
+//  int sidePositionFactor[6][3] = {
+// each 3 array represents xyz of a side and how to transform from front facing LEDS
+// 0 = always 0
+// 7 = always 7
+//1,2,3 = look at y,x,zrespectively of original coordinates toget this value
+//    {1,7,2},{1,0,2},{1,2,0},{1,2,7),{7,2,1},{0,2,1}
+//  }
+//0 yellow 1 white 2 orange 3 blue 4 green 5 red
+
 
 void printMatrix(int* matrixToPrint, int len, int width) {
   int matrix[len][width];
@@ -2237,7 +2540,7 @@ void wipe_out(){//*****wipe_out*****wipe_out*****wipe_out*****wipe_out*****wipe_
       bbt=random(1, 16);}  
         start=millis();
       
-  while(millis()-start<10000){
+  while(millis()-start<100000){
         if (interrupted) {
       interruptRoutine(true);
       return;
@@ -2350,7 +2653,7 @@ void rainVersionTwo(int* settings){//****rainVersionTwo****rainVersionTwo****rai
     zz[addr]=random(16);     
   }
   start=millis();
-  while(millis()-start<(20000*pow(2,settings[0]))){
+  while(millis()-start<(30000*pow(2,settings[0]))){
   //wipe_out();
   //for(addr=0; addr<leds; addr++)
   //LED(zold[addr], xold[addr], yold[addr], 0, 0, 0);
@@ -2491,7 +2794,7 @@ void folder(int* settings){//****folder****folder****folder****folder****folder*
   
   
   start=millis();
-  while(millis()-start<10000*pow(2,settings[0])){ 
+  while(millis()-start<50000*pow(2,settings[0])){ 
     if (interrupted) {
       interruptRoutine(true);
       return;
@@ -3077,7 +3380,7 @@ void sinwaveTwo(){//*****sinewaveTwo*****sinewaveTwo*****sinewaveTwo*****sinewav
   
       start=millis();
       
-  while(millis()-start<15000){
+  while(millis()-start<75000){
     if (interrupted) {
       interruptRoutine(true);
       return;
@@ -3232,7 +3535,7 @@ void color_wheelTWO(){//*****colorWheelTwo*****colorWheelTwo*****colorWheelTwo**
   
         start=millis();
       
-  while(millis()-start<10000){
+  while(millis()-start<100000){
     if (interrupted) {
       interruptRoutine(true);
       return;
@@ -3318,8 +3621,7 @@ void color_wheelTWO(){//*****colorWheelTwo*****colorWheelTwo*****colorWheelTwo**
 void harlem_shake(){
   
   
-  
-int greenx = random(1,7),greeny = random(1,7),bluex = random(1,7),bluey = random(1,7),redx = random(1,7),redy = random(1,7);
+byte greenx = random(1,7),greeny = random(1,7),bluex = random(1,7),bluey = random(1,7),redx = random(1,7),redy = random(1,7);
 int greenmult=1, bluemult=1, redmult=1;
 int greenmulty=1, bluemulty=1, redmulty=1;
 int oredx, oredy,obluex,obluey,ogreenx,ogreeny, cb1=15,cb2=0,cr1=15,cr2=0,cg1=15,cg2=0;
@@ -3384,7 +3686,6 @@ for(counter=0; counter<85; counter++){
   ogreeny=greeny;
   oredx=redx;
   oredy=redy;
-  
 for(i=100; i>time_counter; i--)
   delay(1);
 
@@ -3442,7 +3743,6 @@ for(counter=0; counter<85; counter++){
   obluey=bluey;
   oredx=redx;
   oredy=redy;
-  
 for(i=100; i>time_counter; i--)
   delay(1);
 
@@ -3539,7 +3839,6 @@ for(counter=0; counter<3; counter++){ // counter was 3
       return;
     }
 clean(); 
-
 // this is the random changing led colour full cube
 
 
@@ -3563,7 +3862,6 @@ for(m=0; m<20; m++){
   
   
 clean();
-
 
 color_select=random(0,3);
 if(color_select==0){
@@ -3702,7 +4000,6 @@ LED(x2+1,y2-1,z2-1,c21,c22,c23);
 LED(x2-1,y2+1,z2-1,c21,c22,c23);
 LED(x2-1,y2-1,z2-1,c21,c22,c23);
 
-
     if (interrupted) {
       interruptRoutine(true);
       return;
@@ -3775,7 +4072,6 @@ z2mult=random(0,2);
 }//counter  counter counter counter counter
 
 
-
 for(counter=0; counter<15; counter++){
   color_select=random(0,3);
 if(color_select==0){
@@ -3802,7 +4098,6 @@ num1++;
 num2++;
 num3++;
 num4++;
-
 
 for(i=3; i<5; i++){
 LED(num1, i,3,0,0,0);
@@ -3854,7 +4149,6 @@ LED(num4+1, i,7,c1,c2,c3);
 }
 //delay(1);
 }//m
-
 num1=8;
 num2=11;
 num3=13;
@@ -3975,6 +4269,23 @@ void MultiplyFloatMatrix(float* A, float* B, int m, int p, int n, float* C)
         C[n * i + j] = C[n * i + j] + A[p * i + k] * B[n * k + j];
     }
 }
+void MultiplyIntAndFloatMatrix(int* A, float* B, int m, int p, int n, float* C)
+{
+  // A = input matrix (m x p)
+  // B = input matrix (p x n)
+  // m = number of rows in A
+  // p = number of columns in A = number of rows in B
+  // n = number of columns in B
+  // C = output matrix = A*B (m x n)
+  int i, j, k;
+  for (i = 0; i < m; i++)
+    for(j = 0; j < n; j++)
+    {
+      C[n * i + j] = 0;
+      for (k = 0; k < p; k++)
+        C[n * i + j] = C[n * i + j] + (float)A[p * i + k] * B[n * k + j];
+    }
+}
 
 void clean(){
   int ii, jj, kk;
@@ -4023,20 +4334,25 @@ void displayTextRoutine(int* settings) {
     switch (settings[2]) {
       case 0:
       {
-        displayScrollingColoredText(messages[settings[1]-6],settings[3]);
+        displayScrollingRandomText();
         break;
       }
       case 1:
       {
-        displaySolidColoredText(messages[settings[1]-6],2000,settings[3]);
+        displayScrollingColoredText(messages[settings[1]-6],settings[3]);
         break;
       }
       case 2:
       {
-        displayScrollingText(messages[settings[1]-6],random(16),random(16),random(16));
+        displaySolidColoredText(messages[settings[1]-6],2000,settings[3]);
         break;
       }
       case 3:
+      {
+        displayScrollingText(messages[settings[1]-6],random(16),random(16),random(16));
+        break;
+      }
+      case 4:
       {
         displaySolidText(messages[settings[1]-6],2000,random(16),random(16),random(16));
         break;
@@ -4086,7 +4402,17 @@ void displayScrollingColoredText(String s,int colorSet) {
     }
   }
 }
-
+void displayScrollingRandomText() {
+  String s = messages[random(numberOfMessages)];
+  byte color = random(numberOfColorSets);
+  for (char c : s) {
+    displayScrollingColoredLetter(c,color);
+     if (interrupted) {
+      interruptRoutine(false);
+      return;
+    }
+  }
+}
 
 
 void displaySolidLetter(char c,int R, int G, int B) {
@@ -4122,6 +4448,49 @@ void displaySolidLetter(char c,int R, int G, int B) {
     }
   }
  }
+void displayColoredQuestionMark() {
+char display[8];// = font_data[c];
+int j = 7;
+int colorSet = random(1);
+byte font_data[8] = {0x3C,  0x66,  0x06,  0x1C,  0x18,  0x00,  0x18,0x18 };
+for (int i = 0; i < 8; i++) {
+  //display[0] = 0x00;
+  display[i] = font_data[j];
+  j--;
+}
+for (int x = 0; x < 50; x++) {
+    if (interrupted) {
+      interruptRoutine(true);
+      return;
+    }
+  for (int level = 0; level < 8; level++) {
+  int row = 0;
+  //reverseCounter is used to horizonally flip the chars on opposite sides of the cube
+  int reverseCounter = 7;
+  for (unsigned int mask = 0x80; mask != 0; mask >>= 1) {
+      if (display[level] & mask) {
+        //bit is 1
+          LED(level,row,0,colorSets[colorSet][level][0],colorSets[colorSet][level][1],colorSets[colorSet][level][2]);
+          LED(level,reverseCounter,7,colorSets[colorSet][level][0],colorSets[colorSet][level][1],colorSets[colorSet][level][2]);
+          LED(level,0,reverseCounter,colorSets[colorSet][level][0],colorSets[colorSet][level][1],colorSets[colorSet][level][2]);
+          LED(level,7,row,colorSets[colorSet][level][0],colorSets[colorSet][level][1],colorSets[colorSet][level][2]);
+      }
+      else {
+          // bit is 0
+          LED(level,row,0,0,0,0);
+          LED(level,reverseCounter,7,0,0,0);
+          LED(level,0,reverseCounter,0,0,0);
+          LED(level,7,row,0,0,0);
+      }
+      row++;
+      reverseCounter--;
+  }
+}
+delay(2000);
+colorSet = random(numberOfColorSets);
+}
+clean();
+}
  void displaySolidColoredLetter(char c,int colorSet) {
   char display[8];// = font_data[c];
   int j = 7;
