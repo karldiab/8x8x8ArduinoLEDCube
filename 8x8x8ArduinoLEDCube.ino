@@ -103,16 +103,18 @@ int BAM_Bit, BAM_Counter=0; // Bit Angle Modulation variables to keep track of t
 //These variables can be used for other things
 unsigned long start;//for a millis timer to cycle through the animations
 //appealing sets of colors to use for various animations
-byte numberOfColorSets = 2;
-int colorSets[2][8][3] = {
+byte numberOfColorSets = 3;
+int colorSets[3][8][3] = {
   {{0, 5, 15},{0, 1, 9},{0, 0, 10},{1, 0, 11},{3, 0, 12},{10, 0, 15},{10, 0, 10},{10, 0, 1}},
-  {{15, 15, 0},{10, 10, 0},{15, 5, 0},{15, 2, 0},{15, 1, 0},{15, 0, 0},{12, 0, 0},{10, 0, 0}}
+  {{15, 15, 0},{10, 10, 0},{15, 5, 0},{15, 2, 0},{15, 1, 0},{15, 0, 0},{12, 0, 0},{10, 0, 0}},
+  {{15, 0, 0},{15, 6, 0},{15, 15, 0},{9, 14, 0},{0, 15, 0},{0, 15, 15},{0, 0, 15},{6, 3, 15}}//rainbow
  };
+byte numberOfMessages = 4;
 String messages[4] = {"??????","XXXXXX","!!!!!!!!","BASS"};
 //Object transform variables
-int scrollingTextTransformSteps = 14;
-int scrollingTestStepsTillCleared = 8;
-int scrollingTextTransformObjects = 4;
+byte scrollingTextTransformSteps = 14;
+byte scrollingTestStepsTillCleared = 8;
+byte scrollingTextTransformObjects = 4;
 int scrollingTextTransform[4][14][4][4] = 
       {
         {
@@ -164,20 +166,20 @@ int scrollingTextTransform[4][14][4][4] =
           {{1,0,0,0},{0,0,1,0},{0,-1,0,0},{0,7,-7,1}}
         },
         {
-          {{1,0,0,0},{0,0,1,0},{0,-1,0,0},{0,7,6,1}},
-          {{1,0,0,0},{0,0,1,0},{0,-1,0,0},{0,7,5,1}},
-          {{1,0,0,0},{0,0,1,0},{0,-1,0,0},{0,7,4,1}},
-          {{1,0,0,0},{0,0,1,0},{0,-1,0,0},{0,7,3,1}},
-          {{1,0,0,0},{0,0,1,0},{0,-1,0,0},{0,7,2,1}},
-          {{1,0,0,0},{0,0,1,0},{0,-1,0,0},{0,7,1,1}},
-          {{1,0,0,0},{0,0,1,0},{0,-1,0,0},{0,7,0,1}},
-          {{1,0,0,0},{0,0,1,0},{0,-1,0,0},{0,7,-1,1}},
-          {{1,0,0,0},{0,0,1,0},{0,-1,0,0},{0,7,-2,1}},
-          {{1,0,0,0},{0,0,1,0},{0,-1,0,0},{0,7,-3,1}},
-          {{1,0,0,0},{0,0,1,0},{0,-1,0,0},{0,7,-4,1}},
-          {{1,0,0,0},{0,0,1,0},{0,-1,0,0},{0,7,-5,1}},
-          {{1,0,0,0},{0,0,1,0},{0,-1,0,0},{0,7,-6,1}},
-          {{1,0,0,0},{0,0,1,0},{0,-1,0,0},{0,7,-7,1}}
+          {{1,0,0,0},{0,-1,0,0},{0,0,1,0},{0,1,7,1}},
+          {{1,0,0,0},{0,-1,0,0},{0,0,1,0},{0,2,7,1}},
+          {{1,0,0,0},{0,-1,0,0},{0,0,1,0},{0,3,7,1}},
+          {{1,0,0,0},{0,-1,0,0},{0,0,1,0},{0,4,7,1}},
+          {{1,0,0,0},{0,-1,0,0},{0,0,1,0},{0,5,7,1}},
+          {{1,0,0,0},{0,-1,0,0},{0,0,1,0},{0,6,7,1}},
+          {{1,0,0,0},{0,-1,0,0},{0,0,1,0},{0,7,7,1}},
+          {{1,0,0,0},{0,-1,0,0},{0,0,1,0},{0,8,7,1}},
+          {{1,0,0,0},{0,-1,0,0},{0,0,1,0},{0,9,7,1}},
+          {{1,0,0,0},{0,-1,0,0},{0,0,1,0},{0,10,7,1}},
+          {{1,0,0,0},{0,-1,0,0},{0,0,1,0},{0,11,7,1}},
+          {{1,0,0,0},{0,-1,0,0},{0,0,1,0},{0,12,7,1}},
+          {{1,0,0,0},{0,-1,0,0},{0,0,1,0},{0,13,7,1}},
+          {{1,0,0,0},{0,-1,0,0},{0,0,1,0},{0,14,7,1}}
         }
       };
 //rotation matrixes for rubiks animations spining CW
@@ -1639,13 +1641,12 @@ pinMode(layer8, OUTPUT);
 
 SPI.begin();//start up the SPI library
 interrupts();//let the show begin, this lets the multiplexing start
-
+randomSeed(analogRead(1));
 }//***end setup***end setup***end setup***end setup***end setup***end setup***end setup***end setup***end setup***end setup
 
 
 void loop(){//***start loop***start loop***start loop***start loop***start loop***start loop***start loop***start loop***start loop
 //Serial.print("START LOOP currentRoutine ");Serial.println(currentRoutine);
-
 //Each animation located in a sub routine
 // To control an LED, you simply:
 // LED(level you want 0-7, row you want 0-7, column you want 0-7, red brighness 0-15, green brighness 0-15, blue brighness 0-15);
@@ -1662,7 +1663,8 @@ void loop(){//***start loop***start loop***start loop***start loop***start loop*
       }
       case 1 : 
       {
-        rubiksCube(routineSettings[currentRoutine]);
+        //rubiksCube(routineSettings[currentRoutine]);
+        displayTextRoutine(routineSettings[currentRoutine]);
         break;
       }
       case 2 : 
@@ -1703,18 +1705,17 @@ void loop(){//***start loop***start loop***start loop***start loop***start loop*
       case 8 :
       {
         bouncyvTwo();
-        //dancingCube(routineSettings[currentRoutine]);
         clean();
         break;
       }
       case 9 :
       {
-        fireworks(20,15,0,routineSettings[currentRoutine]);
+        fireworks(40,15,0,routineSettings[currentRoutine]);
         break;
       }
       case 10 : 
       {
-        displayColoredQuestionMark();
+        dancingCube(routineSettings[currentRoutine]);
         break;
       }
       case 11 :
@@ -2011,7 +2012,7 @@ pinMode(blank_pin, OUTPUT);//moved down here so outputs are all off until the fi
 void glowingCube(int* settings) {
   clean();
   int upOrDown;
-  int iterations = 300 * pow(2,settings[0]);
+  int iterations = 500 * pow(2,settings[0]);
   int numberOfFrames = 17;
   bool edgeCurrentlyGlowing[numberOfFrames] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
   //first 3 items are xyz of current glow location, 4th item indicates whether its x y or z that changes, 5th is which frame edge is currently on, 6th is direction of travel
@@ -2522,7 +2523,7 @@ void wipe_out(){//*****wipe_out*****wipe_out*****wipe_out*****wipe_out*****wipe_
       bbt=random(1, 16);}  
         start=millis();
       
-  while(millis()-start<10000){
+  while(millis()-start<100000){
         if (interrupted) {
       interruptRoutine(true);
       return;
@@ -2635,7 +2636,7 @@ void rainVersionTwo(int* settings){//****rainVersionTwo****rainVersionTwo****rai
     zz[addr]=random(16);     
   }
   start=millis();
-  while(millis()-start<(20000*pow(2,settings[0]))){
+  while(millis()-start<(30000*pow(2,settings[0]))){
   //wipe_out();
   //for(addr=0; addr<leds; addr++)
   //LED(zold[addr], xold[addr], yold[addr], 0, 0, 0);
@@ -2776,7 +2777,7 @@ void folder(int* settings){//****folder****folder****folder****folder****folder*
   
   
   start=millis();
-  while(millis()-start<10000*pow(2,settings[0])){ 
+  while(millis()-start<50000*pow(2,settings[0])){ 
     if (interrupted) {
       interruptRoutine(true);
       return;
@@ -3362,7 +3363,7 @@ void sinwaveTwo(){//*****sinewaveTwo*****sinewaveTwo*****sinewaveTwo*****sinewav
   
       start=millis();
       
-  while(millis()-start<15000){
+  while(millis()-start<75000){
     if (interrupted) {
       interruptRoutine(true);
       return;
@@ -3517,7 +3518,7 @@ void color_wheelTWO(){//*****colorWheelTwo*****colorWheelTwo*****colorWheelTwo**
   
         start=millis();
       
-  while(millis()-start<10000){
+  while(millis()-start<100000){
     if (interrupted) {
       interruptRoutine(true);
       return;
@@ -4099,7 +4100,6 @@ LED(num2, 2,i,0,0,0);
 LED(num2, 5,i,0,0,0);
 LED(num2, i,5,0,0,0);
 }
-return;
 for(i=2; i<6; i++){
 LED(num2+1, i,2,c1,c2,c3);
 LED(num2+1, 2,i,c1,c2,c3);
@@ -4317,20 +4317,25 @@ void displayTextRoutine(int* settings) {
     switch (settings[2]) {
       case 0:
       {
-        displayScrollingColoredText(messages[settings[1]-6],settings[3]);
+        displayScrollingRandomText();
         break;
       }
       case 1:
       {
-        displaySolidColoredText(messages[settings[1]-6],2000,settings[3]);
+        displayScrollingColoredText(messages[settings[1]-6],settings[3]);
         break;
       }
       case 2:
       {
-        displayScrollingText(messages[settings[1]-6],random(16),random(16),random(16));
+        displaySolidColoredText(messages[settings[1]-6],2000,settings[3]);
         break;
       }
       case 3:
+      {
+        displayScrollingText(messages[settings[1]-6],random(16),random(16),random(16));
+        break;
+      }
+      case 4:
       {
         displaySolidText(messages[settings[1]-6],2000,random(16),random(16),random(16));
         break;
@@ -4380,7 +4385,17 @@ void displayScrollingColoredText(String s,int colorSet) {
     }
   }
 }
-
+void displayScrollingRandomText() {
+  String s = messages[random(numberOfMessages)];
+  byte color = random(numberOfColorSets);
+  for (char c : s) {
+    displayScrollingColoredLetter(c,color);
+     if (interrupted) {
+      interruptRoutine(false);
+      return;
+    }
+  }
+}
 
 
 void displaySolidLetter(char c,int R, int G, int B) {
