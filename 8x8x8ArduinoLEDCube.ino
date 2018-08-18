@@ -2,7 +2,7 @@
 #include <SPI.h>// SPI Library used to clock data out to the shift registers
 #include <string.h>
 #include <MatrixMath.h>
-
+#include <avr/pgmspace.h>
 
 #define latch_pin 4// Defines actual BIT of PortD for latch - is Arduino UNO pin 2, MEGA pin 4
 #define blank_pin 5// Defines actual BIT of PortD for blank - is Arduino UNO pin 3, MEGA pin 5
@@ -104,7 +104,7 @@ int BAM_Bit, BAM_Counter=0; // Bit Angle Modulation variables to keep track of t
 unsigned long start;//for a millis timer to cycle through the animations
 //appealing sets of colors to use for various animations
 byte numberOfColorSets = 3;
-int colorSets[3][8][3] = {
+const int colorSets[3][8][3] PROGMEM = {
   {{0, 5, 15},{0, 1, 9},{0, 0, 10},{1, 0, 11},{3, 0, 12},{10, 0, 15},{10, 0, 10},{10, 0, 1}},
   {{15, 15, 0},{10, 10, 0},{15, 5, 0},{15, 2, 0},{15, 1, 0},{15, 0, 0},{12, 0, 0},{10, 0, 0}},
   {{15, 0, 0},{15, 6, 0},{15, 15, 0},{9, 14, 0},{0, 15, 0},{0, 15, 15},{0, 0, 15},{6, 3, 15}}//rainbow
@@ -115,7 +115,7 @@ String messages[4] = {"??????","XXXXXX","!!!!!!!!","BASS"};
 byte scrollingTextTransformSteps = 14;
 byte scrollingTestStepsTillCleared = 8;
 byte scrollingTextTransformObjects = 4;
-int scrollingTextTransform[4][14][4][4] = 
+const int scrollingTextTransform[4][14][4][4] = 
       {
         {
           {{1,0,0,0},{0,1,0,0},{0,0,1,0},{0,6,0,1}},
@@ -166,22 +166,6 @@ int scrollingTextTransform[4][14][4][4] =
           {{1,0,0,0},{0,0,1,0},{0,-1,0,0},{0,7,-7,1}}
         },
         {
-<<<<<<< HEAD
-          {{1,0,0,0},{0,-1,0,0},{0,0,-1,0},{0,2,7,1}},
-          {{1,0,0,0},{0,-1,0,0},{0,0,-1,0},{0,3,7,1}},
-          {{1,0,0,0},{0,-1,0,0},{0,0,-1,0},{0,4,7,1}},
-          {{1,0,0,0},{0,-1,0,0},{0,0,-1,0},{0,5,7,1}},
-          {{1,0,0,0},{0,-1,0,0},{0,0,-1,0},{0,6,7,1}},
-          {{1,0,0,0},{0,-1,0,0},{0,0,-1,0},{0,7,7,1}},
-          {{1,0,0,0},{0,-1,0,0},{0,0,-1,0},{0,8,7,1}},
-          {{1,0,0,0},{0,-1,0,0},{0,0,-1,0},{0,9,7,1}},
-          {{1,0,0,0},{0,-1,0,0},{0,0,-1,0},{0,10,7,1}},
-          {{1,0,0,0},{0,-1,0,0},{0,0,-1,0},{0,11,7,1}},
-          {{1,0,0,0},{0,-1,0,0},{0,0,-1,0},{0,12,7,1}},
-          {{1,0,0,0},{0,-1,0,0},{0,0,-1,0},{0,13,7,1}},
-          {{1,0,0,0},{0,-1,0,0},{0,0,-1,0},{0,14,-7,1}},
-          {{1,0,0,0},{0,-1,0,0},{0,0,-1,0},{0,15,7,1}}
-=======
           {{1,0,0,0},{0,-1,0,0},{0,0,1,0},{0,1,7,1}},
           {{1,0,0,0},{0,-1,0,0},{0,0,1,0},{0,2,7,1}},
           {{1,0,0,0},{0,-1,0,0},{0,0,1,0},{0,3,7,1}},
@@ -196,7 +180,6 @@ int scrollingTextTransform[4][14][4][4] =
           {{1,0,0,0},{0,-1,0,0},{0,0,1,0},{0,12,7,1}},
           {{1,0,0,0},{0,-1,0,0},{0,0,1,0},{0,13,7,1}},
           {{1,0,0,0},{0,-1,0,0},{0,0,1,0},{0,14,7,1}}
->>>>>>> rubiksDev
         }
       };
 //rotation matrixes for rubiks animations spining CW
@@ -300,7 +283,7 @@ int identityMatrix[4][4] = {
 };
 
 
-char font_data[128][8] = {
+const char font_data[128][8] PROGMEM = {
 { 0x00,  0x00,  0x00,  0x00,  0x00,  0x00,  0x00,  0x00 },    // 0 :
                 //              |          |
                 //              |          |
@@ -1605,7 +1588,7 @@ for (int i = 0; i < numberOfRoutines; i++) {
 pinMode(buttonPin, INPUT);
 // Attach an interrupt to the ISR vector
 attachInterrupt(digitalPinToInterrupt(buttonPin), pin_ISR, FALLING);
-//Serial.begin(9600); 
+Serial.begin(9600); 
 SPI.setBitOrder(MSBFIRST);//Most Significant Bit First
 SPI.setDataMode(SPI_MODE0);// Mode 0 Rising edge of data, keep clock low
 // SPI.setClockDivider(SPI_CLOCK_DIV2);//Run the data in at 16MHz/2 - 8MHz
@@ -1663,6 +1646,8 @@ randomSeed(analogRead(1));
 
 
 void loop(){//***start loop***start loop***start loop***start loop***start loop***start loop***start loop***start loop***start loop
+//  rubiksCube(routineSettings[currentRoutine]);
+//  return;
 //Serial.print("START LOOP currentRoutine ");Serial.println(currentRoutine);
 //Each animation located in a sub routine
 // To control an LED, you simply:
@@ -1675,7 +1660,7 @@ void loop(){//***start loop***start loop***start loop***start loop***start loop*
     switch (currentRoutine) {
       case 0 : 
       {
-        //displayTextRoutine(routineSettings[currentRoutine]);
+        rubiksCube(routineSettings[currentRoutine]);
         break;
       }
       case 1 : 
@@ -2058,7 +2043,6 @@ void glowingCube(int* settings) {
     }
     for (int j = 0; j < numberOfFrames; j++) {
       if (edgeCurrentlyGlowing[j] != 0) {
-        //Serial.print(edgeCurrentFrame[j][0]);Serial.print(",");Serial.print(edgeCurrentFrame[j][1]);Serial.print(",");Serial.print(edgeCurrentFrame[j][2]);Serial.print(",");Serial.print(edgeCurrentFrame[j][3]);Serial.print(",");Serial.print(edgeCurrentFrame[j][4]);Serial.print("+");Serial.println(edgeCurrentlyGlowing[j]);
         if (edgeCurrentFrame[j][4] == 8) {
           LED(edgeCurrentFrame[j][0],edgeCurrentFrame[j][1],edgeCurrentFrame[j][2],0,0,0);
           edgeCurrentFrame[j][4] = 0;
@@ -2229,7 +2213,7 @@ void rubiksCube(int* options) {
     {45,46,47,48,49,50,51,52,53,6,7,8,15,16,17,24,25,26,33,34,35}
   };
   //indexes to swap with if CW
-  byte swapIndex[6][21] = {
+  const byte swapIndex[6][21] PROGMEM = {
     {6,3,0,7,4,1,8,5,2,47,50,53,38,41,44,20,23,26,27,30,33},
     {15,12,9,16,13,10,17,14,11,36,39,42,45,48,51,29,32,35,18,21,24},
     {24,21,18,25,22,19,26,23,20,42,43,44,45,46,47,11,14,17,0,3,6},
@@ -2261,13 +2245,15 @@ void rotateCube(int* oldPositions, int* newPositions, int sideToRotate, bool CW)
   }
   for (int i =0; i < 21; i++) {
     if (CW)
-      newPositions[originalStickersIndex[sideToRotate][i]] = oldPositions[swapIndex[sideToRotate][i]];
+      newPositions[originalStickersIndex[sideToRotate][i]] = oldPositions[pgm_read_byte_near(&swapIndex[sideToRotate][i])];
      else
-      newPositions[swapIndex[sideToRotate][i]] = oldPositions[originalStickersIndex[sideToRotate][i]];
+      newPositions[pgm_read_byte_near(&swapIndex[sideToRotate][i])] = oldPositions[originalStickersIndex[sideToRotate][i]];
   }
   //precompute frames for animation
   //5 frames for animation, 84 LEDs are moving,4 ints for y,x,z,1
-  int frames[4][84][4];
+  //converted the middle 3 frame data to bytes to save memory
+  byte frames[3][84][4];
+  int firstFrame[84][4];
   byte LEDColors[21];
   //21 stickers moving
   for (int i =0; i < 21; i++) {
@@ -2275,8 +2261,7 @@ void rotateCube(int* oldPositions, int* newPositions, int sideToRotate, bool CW)
      MultiplyIntMatrix((int*)stickerLEDPositions[(originalStickersIndex[sideToRotate][i]%9)/3][originalStickersIndex[sideToRotate][i]%3], (int*)sideDisplayTransforms[originalStickersIndex[sideToRotate][i]/9], 4,4,4, (int*)LEDPositions);
      for (int j=0;j<4;j++) {
       for (int k = 0; k < 4; k++) {
-          frames[0][i*4+j][k] = LEDPositions[j][k];
-          //originalFrame[i*4+j][k] = (float)LEDPositions[j][k];
+          firstFrame[i*4+j][k] = LEDPositions[j][k];
       }
         LEDColors[i] = oldPositions[originalStickersIndex[sideToRotate][i]];
      }
@@ -2305,22 +2290,32 @@ void rotateCube(int* oldPositions, int* newPositions, int sideToRotate, bool CW)
   }
    for (int i=0;i<3;i++) {
     //holder of float values before rounding to int
-    float frameData[21][4];
-    for (int x = 0; x < 4; x++) {
-      MultiplyIntAndFloatMatrix((int*)frames[0][x*21],(float*)rubiksRotations[sideToRotate][i],21,4,4,(float*)frameData);
-      for (int j = x*21; j < (x+1)*21; j++) {
+    float frameData[5][4];
+    for (int x = 0; x < 16; x++) {
+      MultiplyIntAndFloatMatrix((int*)firstFrame[x*5],(float*)rubiksRotations[sideToRotate][i],5,4,4,(float*)frameData);
+      for (int j = x*5; j < (x+1)*5; j++) {
         for (int k = 0; k < 4; k++) {
-          //round float to int
-          frames[i+1][j][k] = (int)(frameData[j-(x*21)][k] + 0.5);
+          //round float to byte
+          int voxelPosition = (int)(frameData[j-(x*5)][k] + 0.5);
+          frames[i][j][k] = (byte)voxelPosition;
         }
        }
     }
+    MultiplyIntAndFloatMatrix((int*)firstFrame[80],(float*)rubiksRotations[sideToRotate][i],5,4,4,(float*)frameData);
+    for (int j = 80; j < 84; j++) {
+      for (int k = 0; k < 4; k++) {
+        //round float to byte
+        int voxelPosition = (int)(frameData[j-80][k] + 0.5);
+        frames[i][j][k] = (byte)voxelPosition;
+      }
+     }
    }
-    for (int i = 0; i < 4; i++) {
-//      if (i>0)
-//        for (int j = 0; j < 84; j++) {
-//          LED(frames[i-1][j][0],frames[i-1][j][1],frames[i-1][j][2],0,0,0);
-//        }
+   //printMatrix((int*)frames[1],8,4);
+    for (int j = 0; j < 84; j++) {
+      LED(firstFrame[j][0],firstFrame[j][1],firstFrame[j][2],colorTranslator[LEDColors[j/4]][0],colorTranslator[LEDColors[j/4]][1],colorTranslator[LEDColors[j/4]][2]);
+    }
+    delay(80);
+    for (int i = 0; i < 3; i++) {
       rubiksCleanup();
       for (int j = 0; j < 84; j++) {
         LED(frames[i][j][0],frames[i][j][1],frames[i][j][2],colorTranslator[LEDColors[j/4]][0],colorTranslator[LEDColors[j/4]][1],colorTranslator[LEDColors[j/4]][2]);
@@ -4331,38 +4326,39 @@ void displayTextRoutine(int* settings) {
     }
     if (settings[1]-6 < 0)
     settings[1] = 6;
-    switch (settings[2]) {
-      case 0:
-      {
-        displayScrollingRandomText();
-        break;
-      }
-      case 1:
-      {
-        displayScrollingColoredText(messages[settings[1]-6],settings[3]);
-        break;
-      }
-      case 2:
-      {
-        displaySolidColoredText(messages[settings[1]-6],2000,settings[3]);
-        break;
-      }
-      case 3:
-      {
-        displayScrollingText(messages[settings[1]-6],random(16),random(16),random(16));
-        break;
-      }
-      case 4:
-      {
-        displaySolidText(messages[settings[1]-6],2000,random(16),random(16),random(16));
-        break;
-      }
-      default:
-      {
-        displayScrollingColoredText(messages[settings[1]-6],settings[3]);
-        break;
-      }
-    }
+    displayScrollingRandomText();
+//    switch (settings[2]) {
+//      case 0:
+//      {
+//        displayScrollingRandomText();
+//        break;
+//      }
+//      case 1:
+//      {
+//        displayScrollingColoredText(messages[settings[1]-6],settings[3]);
+//        break;
+//      }
+//      case 2:
+//      {
+//        displaySolidColoredText(messages[settings[1]-6],2000,settings[3]);
+//        break;
+//      }
+//      case 3:
+//      {
+//        displayScrollingText(messages[settings[1]-6],random(16),random(16),random(16));
+//        break;
+//      }
+//      case 4:
+//      {
+//        displaySolidText(messages[settings[1]-6],2000,random(16),random(16),random(16));
+//        break;
+//      }
+//      default:
+//      {
+//        displayScrollingColoredText(messages[settings[1]-6],settings[3]);
+//        break;
+//      }
+//    }
   }
   
 }
@@ -4407,6 +4403,7 @@ void displayScrollingRandomText() {
   byte color = random(numberOfColorSets);
   for (char c : s) {
     displayScrollingColoredLetter(c,color);
+    clean();
      if (interrupted) {
       interruptRoutine(false);
       return;
@@ -4421,7 +4418,7 @@ void displaySolidLetter(char c,int R, int G, int B) {
   int j = 7;
   for (int i = 0; i < 8; i++) {
     //display[0] = 0x00;
-    display[i] = font_data[c][j];
+    display[i] = pgm_read_word_near(&font_data[c][j]);
     j--;
   }
   for (int level = 0; level < 8; level++) {
@@ -4448,55 +4445,12 @@ void displaySolidLetter(char c,int R, int G, int B) {
     }
   }
  }
-void displayColoredQuestionMark() {
-char display[8];// = font_data[c];
-int j = 7;
-int colorSet = random(1);
-byte font_data[8] = {0x3C,  0x66,  0x06,  0x1C,  0x18,  0x00,  0x18,0x18 };
-for (int i = 0; i < 8; i++) {
-  //display[0] = 0x00;
-  display[i] = font_data[j];
-  j--;
-}
-for (int x = 0; x < 50; x++) {
-    if (interrupted) {
-      interruptRoutine(true);
-      return;
-    }
-  for (int level = 0; level < 8; level++) {
-  int row = 0;
-  //reverseCounter is used to horizonally flip the chars on opposite sides of the cube
-  int reverseCounter = 7;
-  for (unsigned int mask = 0x80; mask != 0; mask >>= 1) {
-      if (display[level] & mask) {
-        //bit is 1
-          LED(level,row,0,colorSets[colorSet][level][0],colorSets[colorSet][level][1],colorSets[colorSet][level][2]);
-          LED(level,reverseCounter,7,colorSets[colorSet][level][0],colorSets[colorSet][level][1],colorSets[colorSet][level][2]);
-          LED(level,0,reverseCounter,colorSets[colorSet][level][0],colorSets[colorSet][level][1],colorSets[colorSet][level][2]);
-          LED(level,7,row,colorSets[colorSet][level][0],colorSets[colorSet][level][1],colorSets[colorSet][level][2]);
-      }
-      else {
-          // bit is 0
-          LED(level,row,0,0,0,0);
-          LED(level,reverseCounter,7,0,0,0);
-          LED(level,0,reverseCounter,0,0,0);
-          LED(level,7,row,0,0,0);
-      }
-      row++;
-      reverseCounter--;
-  }
-}
-delay(2000);
-colorSet = random(numberOfColorSets);
-}
-clean();
-}
  void displaySolidColoredLetter(char c,int colorSet) {
   char display[8];// = font_data[c];
   int j = 7;
   for (int i = 0; i < 8; i++) {
     //display[0] = 0x00;
-    display[i] = font_data[c][j];
+    display[i] = pgm_read_word_near(&font_data[c][j]);
     j--;
   }
   for (int level = 0; level < 8; level++) {
@@ -4506,10 +4460,10 @@ clean();
     for (unsigned int mask = 0x80; mask != 0; mask >>= 1) {
         if (display[level] & mask) {
           //bit is 1
-            LED(level,row,0,colorSets[colorSet][level][0],colorSets[colorSet][level][1],colorSets[colorSet][level][2]);
-            LED(level,reverseCounter,7,colorSets[colorSet][level][0],colorSets[colorSet][level][1],colorSets[colorSet][level][2]);
-            LED(level,0,reverseCounter,colorSets[colorSet][level][0],colorSets[colorSet][level][1],colorSets[colorSet][level][2]);
-            LED(level,7,row,colorSets[colorSet][level][0],colorSets[colorSet][level][1],colorSets[colorSet][level][2]);
+            LED(level,row,0,pgm_read_word_near(&colorSets[colorSet][level][0]),pgm_read_word_near(&colorSets[colorSet][level][1]),pgm_read_word_near(&colorSets[colorSet][level][2]));
+            LED(level,reverseCounter,7,pgm_read_word_near(&colorSets[colorSet][level][0]),pgm_read_word_near(&colorSets[colorSet][level][1]),pgm_read_word_near(&colorSets[colorSet][level][2]));
+            LED(level,0,reverseCounter,pgm_read_word_near(&colorSets[colorSet][level][0]),pgm_read_word_near(&colorSets[colorSet][level][1]),pgm_read_word_near(&colorSets[colorSet][level][2]));
+            LED(level,7,row,pgm_read_word_near(&colorSets[colorSet][level][0]),pgm_read_word_near(&colorSets[colorSet][level][1]),pgm_read_word_near(&colorSets[colorSet][level][2]));
         }
         else {
             // bit is 0
@@ -4528,7 +4482,7 @@ void displayScrollingLetter(char c, int R, int G, int B) {
   char letter[8];
   int j = 7;
   for (int i = 0; i < 8; i++) {
-    letter[i] = font_data[c][j--];
+    letter[i] = pgm_read_word_near(&font_data[c][j--]);
   }
   int pointCounter = 0;
   //counts how many points this char has
@@ -4539,16 +4493,16 @@ void displayScrollingLetter(char c, int R, int G, int B) {
           }
       }
     }
-    int pointsArray[pointCounter][4];
+    byte pointsArray[pointCounter][4];
     pointCounter = 0;
     for (int level = 0; level < 8; level++) {
         int row = 0;
         for (unsigned int mask = 0x80; mask != 0; mask >>= 1) {
             if (letter[level] & mask) {
-                pointsArray[pointCounter][0] = level;
-                pointsArray[pointCounter][1] = row; 
-                pointsArray[pointCounter][2] = 0;
-                pointsArray[pointCounter++][3] = 1;
+                pointsArray[pointCounter][0] = (byte)level;
+                pointsArray[pointCounter][1] = (byte)row; 
+                pointsArray[pointCounter][2] = (byte)0;
+                pointsArray[pointCounter++][3] = (byte)1;
             }
             row++;
         }
@@ -4582,7 +4536,7 @@ void displayScrollingLetter(char c, int R, int G, int B) {
   char letter[8];
   int j = 7;
   for (int i = 0; i < 8; i++) {
-    letter[i] = font_data[c][j--];
+    letter[i] = pgm_read_word(&font_data[c][j--]);
   }
   int pointCounter = 0;
   //counts how many points this char has
@@ -4624,7 +4578,7 @@ void displayScrollingLetter(char c, int R, int G, int B) {
         }
         for (int pointNo = 0; pointNo < pointCounter; pointNo++) {
           if (currentFrame[transformObjects][pointNo][0] >= 0 && currentFrame[transformObjects][pointNo][0] < 8 && currentFrame[transformObjects][pointNo][1] >= 0 && currentFrame[transformObjects][pointNo][1] < 8 && currentFrame[transformObjects][pointNo][2] >= 0 && currentFrame[transformObjects][pointNo][2] < 8) {
-            LED((int)currentFrame[transformObjects][pointNo][0],(int)currentFrame[transformObjects][pointNo][1],(int)currentFrame[transformObjects][pointNo][2],colorSets[colorSet][(int)currentFrame[transformObjects][pointNo][0]][0],colorSets[colorSet][(int)currentFrame[transformObjects][pointNo][0]][1],colorSets[colorSet][(int)currentFrame[transformObjects][pointNo][0]][2]);
+            LED((int)currentFrame[transformObjects][pointNo][0],(int)currentFrame[transformObjects][pointNo][1],(int)currentFrame[transformObjects][pointNo][2],pgm_read_word_near(&colorSets[colorSet][(int)currentFrame[transformObjects][pointNo][0]][0]),pgm_read_word_near(&colorSets[colorSet][(int)currentFrame[transformObjects][pointNo][0]][1]),pgm_read_word_near(&colorSets[colorSet][(int)currentFrame[transformObjects][pointNo][0]][2]));
           }
         }
         
