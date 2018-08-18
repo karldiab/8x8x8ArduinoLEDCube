@@ -32,7 +32,7 @@ int lastAnode;
 #define btnLEFT   3
 #define btnSELECT 4
 #define btnNONE   5
-#define numberOfRoutines 12
+#define numberOfRoutines 13
 //This holds the settings for each routine, there are 4 different settings, which each setting does it decided by the routine itself
 int routineSettings[numberOfRoutines][4];
 char* settingNames[4] = {"A", "B", "C", "D"};
@@ -1660,67 +1660,72 @@ void loop(){//***start loop***start loop***start loop***start loop***start loop*
     switch (currentRoutine) {
       case 0 : 
       {
-        rubiksCube(routineSettings[currentRoutine]);
+        //leave blank because of some weird bug making cube never loop back to case 0
         break;
       }
       case 1 : 
+      {
+        rubiksCube(routineSettings[currentRoutine]);
+        break;
+      }
+      case 2 : 
       {
         //rubiksCube(routineSettings[currentRoutine]);
         displayTextRoutine(routineSettings[currentRoutine]);
         break;
       }
-      case 2 : 
+      case 3 : 
       {
         rainVersionTwo(routineSettings[currentRoutine]);
         clean(); 
         break;
       }
-      case 3 : 
+      case 4 : 
       {
         folder(routineSettings[currentRoutine]);
         clean();
         break;
       }
-      case 4 : 
+      case 5 : 
       {
         wipe_out();
         clean();
         break;
       }
-      case 5 : 
+      case 6 : 
       {
         glowingCube(routineSettings[currentRoutine]);
         break;
       }
-      case 6 : 
+      case 7 : 
       {
         color_wheelTWO();
         clean();
         break;
       }
-      case 7 : 
+      case 8 : 
       {
         harlem_shake();
         clean();
         break;
       }
-      case 8 :
+      case 9 :
       {
         bouncyvTwo();
         clean();
         break;
       }
-      case 9 :
+      case 10 :
       {
         fireworks(40,15,0,routineSettings[currentRoutine]);
         break;
       }
-      case 10 : 
+      case 11 : 
       {
         dancingCube(routineSettings[currentRoutine]);
         break;
       }
-      case 11 :
+      case 12 :
       {
         sinwaveTwo();
         clean();
