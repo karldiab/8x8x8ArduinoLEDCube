@@ -32,7 +32,7 @@ int lastAnode;
 #define btnLEFT   3
 #define btnSELECT 4
 #define btnNONE   5
-#define numberOfRoutines 13
+#define numberOfRoutines 14
 //This holds the settings for each routine, there are 4 different settings, which each setting does it decided by the routine itself
 int routineSettings[numberOfRoutines][4];
 char* settingNames[4] = {"A", "B", "C", "D"};
@@ -103,14 +103,16 @@ int BAM_Bit, BAM_Counter=0; // Bit Angle Modulation variables to keep track of t
 //These variables can be used for other things
 unsigned long start;//for a millis timer to cycle through the animations
 //appealing sets of colors to use for various animations
-byte numberOfColorSets = 3;
-const int colorSets[3][8][3] PROGMEM = {
+#define numberOfColorSets 5
+const int colorSets[numberOfColorSets][8][3] PROGMEM = {
   {{0, 5, 15},{0, 1, 9},{0, 0, 10},{1, 0, 11},{3, 0, 12},{10, 0, 15},{10, 0, 10},{10, 0, 1}},
   {{15, 15, 0},{10, 10, 0},{15, 5, 0},{15, 2, 0},{15, 1, 0},{15, 0, 0},{12, 0, 0},{10, 0, 0}},
-  {{15, 0, 0},{15, 6, 0},{15, 15, 0},{9, 14, 0},{0, 15, 0},{0, 15, 15},{0, 0, 15},{6, 3, 15}}//rainbow
+  {{15, 0, 0},{15, 6, 0},{15, 15, 0},{9, 14, 0},{0, 15, 0},{0, 15, 15},{0, 0, 15},{6, 3, 15}},//rainbow
+  {{6, 3, 15},{4, 3, 15},{1, 3, 15},{0, 0, 15},{1, 2, 12},{7, 1, 9},{10, 0, 7},{15, 0, 0}},//purple to blue to red
+  {{0, 15, 0},{1, 12, 2},{2, 11, 7},{3, 9, 10},{4, 7, 11},{5, 5, 13},{6, 4, 14},{6, 3, 15}}//green to purple
  };
-byte numberOfMessages = 4;
-String messages[4] = {"??????","XXXXXX","!!!!!!!!","BASS"};
+#define numberOfMessages 4
+String messages[numberOfMessages] = {"??????","XXXXXX","!!!!!!!!","BASS"};
 //Object transform variables
 byte scrollingTextTransformSteps = 14;
 byte scrollingTestStepsTillCleared = 8;
@@ -1646,8 +1648,6 @@ randomSeed(analogRead(1));
 
 
 void loop(){//***start loop***start loop***start loop***start loop***start loop***start loop***start loop***start loop***start loop
-  hyperCube(routineSettings[currentRoutine]);
-  return;
 //Serial.print("START LOOP currentRoutine ");Serial.println(currentRoutine);
 //Each animation located in a sub routine
 // To control an LED, you simply:
@@ -1726,6 +1726,11 @@ void loop(){//***start loop***start loop***start loop***start loop***start loop*
         break;
       }
       case 12 :
+      {
+        hyperCube(routineSettings[currentRoutine]);
+        clean();
+      }
+      case 13 :
       {
         sinwaveTwo();
         clean();
@@ -2147,7 +2152,8 @@ void hyperCube(int* settings) {
   bool firstRun = true;
   byte startingColor[3];
   byte oldStartingColor[3];
-  for (int runs = 0; runs < 10; runs++) {
+  int duration = random(1,4)*10*(settings[0]+1);
+  for (int runs = 0; runs < duration; runs++) {
     //0 = y 1 = x 2 = z
     byte colorShiftDirection = random(3);
     byte colorSet = random(numberOfColorSets);
@@ -2156,48 +2162,52 @@ void hyperCube(int* settings) {
     startingColor[1] = pgm_read_word_near(&colorSets[colorSet][colorDirection? 7 : 0][1]);
     startingColor[2] = pgm_read_word_near(&colorSets[colorSet][colorDirection? 7 : 0][2]);
     if (!firstRun) {
-              Serial.println("orig");
-        Serial.print(oldStartingColor[0]);Serial.print(",");Serial.print(oldStartingColor[1]);Serial.print(",");Serial.println(oldStartingColor[2]);Serial.println();
-      for (int frame = 0; frame < 8; frame++) {
-        int R = map(frame,0,8,oldStartingColor[0],startingColor[0]);
-        int G = map(frame,0,8,oldStartingColor[1],startingColor[1]);
-        int B = map(frame,0,8,oldStartingColor[2],startingColor[2]);
-
-        Serial.print(R);Serial.print(",");Serial.print(G);Serial.print(",");Serial.println(B);
-
+      for (int frame = 0; frame < 6; frame++) {
+        int R = map(frame,0,6,oldStartingColor[0],startingColor[0]);
+        int G = map(frame,0,6,oldStartingColor[1],startingColor[1]);
+        int B = map(frame,0,6,oldStartingColor[2],startingColor[2]);
         for (int i = 0; i < 120; i++) {
             LED(pgm_read_byte_near(&hyperCubePoints[i][0]),pgm_read_byte_near(&hyperCubePoints[i][1]),pgm_read_byte_near(&hyperCubePoints[i][2]),R,G,B);
         }
-        delay(1000);
+        delay(150);
       }
-              Serial.println("new");
-        Serial.print(startingColor[0]);Serial.print(",");Serial.print(startingColor[1]);Serial.print(",");Serial.println(startingColor[2]);Serial.println();
     } else {
       for (int i = 0; i < 120; i++) {
           LED(pgm_read_byte_near(&hyperCubePoints[i][0]),pgm_read_byte_near(&hyperCubePoints[i][1]),pgm_read_byte_near(&hyperCubePoints[i][2]),startingColor[0],startingColor[1],startingColor[2]);
       }
     }
     firstRun = false;
-    delay(1000*random(1,4));
+    int yShift;
+    delay(2000*random(1,4));
     for (int frame = 7; frame > -8; frame--) {
       for (int i = 0; i < 120; i++) {
         int xyzPosition = pgm_read_byte_near(&hyperCubePoints[i][colorShiftDirection]);
         if (colorDirection) {
-          int yShift = xyzPosition + frame > 7 ? 7 : xyzPosition + frame;
-          yShift = yShift < 0 ? 0 : yShift;
-          LED(pgm_read_byte_near(&hyperCubePoints[i][0]),pgm_read_byte_near(&hyperCubePoints[i][1]),pgm_read_byte_near(&hyperCubePoints[i][2]),pgm_read_word_near(&colorSets[colorSet][yShift][0]),pgm_read_word_near(&colorSets[colorSet][yShift][1]),pgm_read_word_near(&colorSets[colorSet][yShift][2]));
+          yShift = xyzPosition + frame > 7 ? 7 : xyzPosition + frame;
         } else {
-          int yShift = xyzPosition - frame > 7 ? 7 : xyzPosition - frame;
+          yShift = xyzPosition - frame > 7 ? 7 : xyzPosition - frame;
+        }
           yShift = yShift < 0 ? 0 : yShift;
           LED(pgm_read_byte_near(&hyperCubePoints[i][0]),pgm_read_byte_near(&hyperCubePoints[i][1]),pgm_read_byte_near(&hyperCubePoints[i][2]),pgm_read_word_near(&colorSets[colorSet][yShift][0]),pgm_read_word_near(&colorSets[colorSet][yShift][1]),pgm_read_word_near(&colorSets[colorSet][yShift][2]));
-        }
       }
       delay(150);
+      if (frame == -7) {
+        startingColor[0] = pgm_read_word_near(&colorSets[colorSet][yShift][0]);
+        startingColor[1] = pgm_read_word_near(&colorSets[colorSet][yShift][1]);
+        startingColor[2] = pgm_read_word_near(&colorSets[colorSet][yShift][2]);
+      }
     }
-    delay(1000*random(1,4));
+    delay(2000*random(1,4));
     oldStartingColor[0] = startingColor[0];
     oldStartingColor[1] = startingColor[1];
     oldStartingColor[2] = startingColor[2];
+    if (random(1000) < 30) {
+      for (int runs = 0; runs < 300; runs++) {
+        for (int i = 0; i < 120; i++) {
+            LED(pgm_read_byte_near(&hyperCubePoints[i][0]),pgm_read_byte_near(&hyperCubePoints[i][1]),pgm_read_byte_near(&hyperCubePoints[i][2]),random(13),random(16),random(16));
+        }
+      }
+    }
   }
 }
 
