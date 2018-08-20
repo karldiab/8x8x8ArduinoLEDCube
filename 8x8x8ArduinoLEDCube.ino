@@ -112,7 +112,7 @@ const int colorSets[numberOfColorSets][8][3] PROGMEM = {
   {{0, 15, 0},{1, 12, 2},{2, 11, 7},{3, 9, 10},{4, 7, 11},{5, 5, 13},{6, 4, 14},{6, 3, 15}}//green to purple
  };
 #define numberOfMessages 4
-String messages[numberOfMessages] = {"??????","XXXXXX","!!!!!!!!","BASS"};
+String messages[numberOfMessages] = {"?","X","!","BASS"};
 //Object transform variables
 #define scrollingTextTransformSteps 14
 byte scrollingTestStepsTillCleared = 8;
