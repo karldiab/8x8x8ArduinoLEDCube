@@ -114,10 +114,10 @@ const int colorSets[numberOfColorSets][8][3] PROGMEM = {
 #define numberOfMessages 4
 String messages[numberOfMessages] = {"??????","XXXXXX","!!!!!!!!","BASS"};
 //Object transform variables
-byte scrollingTextTransformSteps = 14;
+#define scrollingTextTransformSteps 14
 byte scrollingTestStepsTillCleared = 8;
 byte scrollingTextTransformObjects = 4;
-const int scrollingTextTransform[4][14][4][4] = 
+const int scrollingTextTransform[4][scrollingTextTransformSteps][4][4] PROGMEM = 
       {
         {
           {{1,0,0,0},{0,1,0,0},{0,0,1,0},{0,6,0,1}},
@@ -186,7 +186,7 @@ const int scrollingTextTransform[4][14][4][4] =
       };
 //rotation matrixes for rubiks animations spining CW
 //0 = right 1 = left 2 = front 3 = back 4 = top 5 =bottom faces
-float rubiksRotations[6][3][4][4] = {
+const float rubiksRotations[6][3][4][4] PROGMEM = {
 {
   {{0.923879532,0,0.382683432,0},{0,1,0,0},{-0.382683432,0,0.923879532,0},{1.605813,0,-1.07297,1}},
   {{0.707106781,0,0.707106781,0},{0,1,0,0},{-0.707106781,0,0.707106781,0},{3.5,0,0,1}},
@@ -239,7 +239,8 @@ int cubeAdjacency[8][8] = {
     {0,1,0,1,1,0,0,0},
     {0,0,1,1,1,0,0,0}
 };
-float dancingCubeTransforms[5][4][4] = {
+#define dancingCubeTransformSteps 5
+const float dancingCubeTransforms[dancingCubeTransformSteps][4][4] PROGMEM = {
  {
     {3,0,0,0},
     {0,3,0,0},
@@ -1741,21 +1742,7 @@ void loop(){//***start loop***start loop***start loop***start loop***start loop*
         break;
       }
     }
-  //fireworks (20,15,0);
-//rainVersionTwo();
-//folder();
-//sinwaveTwo();
-//wipe_out();
-//clean();
-//bouncyvTwo();
-//color_wheelTWO();
-//clean();
-//harlem_shake();
 currentRoutine++;
-Serial.print("END LOOP currentRoutine ");Serial.println(currentRoutine);
-//displaySolidText("KARL",500,9,15,15);
-//displayScrollingLetter('K',15,15,15);
-//displayScrollingText("JEREMY X KARL = CUBE",0,0,15);
 
 
 }//***end loop***end loop***end loop***end loop***end loop***end loop***end loop***end loop***end loop***end loop***end loop***end loop
@@ -2104,12 +2091,12 @@ void dancingCube(int* settings) {
     displayObject((float*) cube,numberOfPoints, R,G,B);
     delay(100*pow(2,settings[1]-6));
     int delayFactor = 50  *pow(2,settings[1]-6);
-    for (int i = 0; i < sizeof(dancingCubeTransforms)/sizeof(dancingCubeTransforms[0]); i++) {
+    for (int i = 0; i < dancingCubeTransformSteps; i++) {
       if (interrupted) {
         interruptRoutine(true);
         return;
       }
-      MultiplyFloatMatrix((float*)cube, (float*)dancingCubeTransforms[i], numberOfPoints, 4, 4, (float*)transformedCube);
+      MultiplyFloatMatrixPROGMEM((float*)cube, (float*)dancingCubeTransforms[i], numberOfPoints, 4, 4, (float*)transformedCube);
       
       
       drawLines((float*)transformedCube, (int*)cubeAdjacency, numberOfPoints,R,G,B);
@@ -2391,7 +2378,7 @@ void rotateCube(int* oldPositions, int* newPositions, int sideToRotate, bool CW)
     //holder of float values before rounding to int
     float frameData[5][4];
     for (int x = 0; x < 16; x++) {
-      MultiplyIntAndFloatMatrix((int*)firstFrame[x*5],(float*)rubiksRotations[sideToRotate][i],5,4,4,(float*)frameData);
+      MultiplyIntAndFloatMatrixPROGMEM((int*)firstFrame[x*5],(float*)rubiksRotations[sideToRotate][i],5,4,4,(float*)frameData);
       for (int j = x*5; j < (x+1)*5; j++) {
         for (int k = 0; k < 4; k++) {
           //round float to byte
@@ -2400,7 +2387,7 @@ void rotateCube(int* oldPositions, int* newPositions, int sideToRotate, bool CW)
         }
        }
     }
-    MultiplyIntAndFloatMatrix((int*)firstFrame[80],(float*)rubiksRotations[sideToRotate][i],5,4,4,(float*)frameData);
+    MultiplyIntAndFloatMatrixPROGMEM((int*)firstFrame[80],(float*)rubiksRotations[sideToRotate][i],5,4,4,(float*)frameData);
     for (int j = 80; j < 84; j++) {
       for (int k = 0; k < 4; k++) {
         //round float to byte
@@ -4346,6 +4333,24 @@ void MultiplyIntMatrix(int* A, int* B, int m, int p, int n, int* C)
         C[n * i + j] = C[n * i + j] + A[p * i + k] * B[n * k + j];
     }
 }
+//exactly like MultiplyIntMatrix except it gets the values of matrix B via PROGMEM recall. This is to save memory
+void MultiplyIntMatrixPROGMEM(int* A, int* B, int m, int p, int n, int* C)
+{
+  // A = input matrix (m x p)
+  // B = input matrix (p x n)
+  // m = number of rows in A
+  // p = number of columns in A = number of rows in B
+  // n = number of columns in B
+  // C = output matrix = A*B (m x n)
+  int i, j, k;
+  for (i = 0; i < m; i++)
+    for(j = 0; j < n; j++)
+    {
+      C[n * i + j] = 0;
+      for (k = 0; k < p; k++)
+        C[n * i + j] = C[n * i + j] + A[p * i + k] * pgm_read_word_near(&B[n * k + j]);
+    }
+}
 void MultiplyFloatMatrix(float* A, float* B, int m, int p, int n, float* C)
 {
   // A = input matrix (m x p)
@@ -4363,7 +4368,8 @@ void MultiplyFloatMatrix(float* A, float* B, int m, int p, int n, float* C)
         C[n * i + j] = C[n * i + j] + A[p * i + k] * B[n * k + j];
     }
 }
-void MultiplyIntAndFloatMatrix(int* A, float* B, int m, int p, int n, float* C)
+//a hacky function to save memory. Multiplys a float matrix A with a PROGMEM float matrix B
+void MultiplyFloatMatrixPROGMEM(float* A, float* B, int m, int p, int n, float* C)
 {
   // A = input matrix (m x p)
   // B = input matrix (p x n)
@@ -4377,7 +4383,25 @@ void MultiplyIntAndFloatMatrix(int* A, float* B, int m, int p, int n, float* C)
     {
       C[n * i + j] = 0;
       for (k = 0; k < p; k++)
-        C[n * i + j] = C[n * i + j] + (float)A[p * i + k] * B[n * k + j];
+        C[n * i + j] = C[n * i + j] + A[p * i + k] * pgm_read_float_near(&B[n * k + j]);
+    }
+}
+//a hacky function to save memory. Multiplys an int matrix A with a PROGMEM float matrix B
+void MultiplyIntAndFloatMatrixPROGMEM(int* A, float* B, int m, int p, int n, float* C)
+{
+  // A = input matrix (m x p)
+  // B = input matrix (p x n)
+  // m = number of rows in A
+  // p = number of columns in A = number of rows in B
+  // n = number of columns in B
+  // C = output matrix = A*B (m x n)
+  int i, j, k;
+  for (i = 0; i < m; i++)
+    for(j = 0; j < n; j++)
+    {
+      C[n * i + j] = 0;
+      for (k = 0; k < p; k++)
+        C[n * i + j] = C[n * i + j] + (float)A[p * i + k] * pgm_read_float_near(&B[n * k + j]);
     }
 }
 
@@ -4417,7 +4441,6 @@ void displaySolidText(String s, int delayms,int R, int G, int B) {
   delay(delayms);
 }
 void displayTextRoutine(int* settings) {
-  Serial.println("in text routine");
   for (int i = 0; i < pow(2,settings[0]+1);i++) {
      if (interrupted) {
       interruptRoutine(true);
@@ -4578,6 +4601,7 @@ void displaySolidLetter(char c,int R, int G, int B) {
  }
 
 void displayScrollingLetter(char c, int R, int G, int B) { 
+  Serial.println("displaying letteR");
   char letter[8];
   int j = 7;
   for (int i = 0; i < 8; i++) {
@@ -4610,11 +4634,11 @@ void displayScrollingLetter(char c, int R, int G, int B) {
       for (int steps = 0; steps < scrollingTextTransformSteps; steps++) {
         for (int transformObjects = 0 ; transformObjects < scrollingTextTransformObjects; transformObjects++) {
         if (steps == 0) {
-          MultiplyIntMatrix((int*)pointsArray, (int*)scrollingTextTransform[transformObjects][steps], pointCounter, 4, 4, (int*)currentFrame[transformObjects]);
+          MultiplyIntMatrixPROGMEM((int*)pointsArray, (int*)scrollingTextTransform[transformObjects][steps], pointCounter, 4, 4, (int*)currentFrame[transformObjects]);
           CopyIntMatrix((int*)currentFrame[transformObjects], pointCounter, 4, (int*)previousFrame[transformObjects]);   
         } else {
           CopyIntMatrix((int*)currentFrame[transformObjects], pointCounter, 4, (int*)previousFrame[transformObjects]);
-          MultiplyIntMatrix((int*)pointsArray, (int*)scrollingTextTransform[transformObjects][steps], pointCounter, 4, 4, (int*)currentFrame[transformObjects]);
+          MultiplyIntMatrixPROGMEM((int*)pointsArray, (int*)scrollingTextTransform[transformObjects][steps], pointCounter, 4, 4, (int*)currentFrame[transformObjects]);
         }
         for (int pointNo = 0; pointNo < pointCounter; pointNo++) {
           if (previousFrame[transformObjects][pointNo][0] >= 0 && previousFrame[transformObjects][pointNo][0] < 8 && previousFrame[transformObjects][pointNo][1] >= 0 && previousFrame[transformObjects][pointNo][1] < 8 && previousFrame[transformObjects][pointNo][2] >= 0 && previousFrame[transformObjects][pointNo][2] < 8) {
@@ -4626,8 +4650,8 @@ void displayScrollingLetter(char c, int R, int G, int B) {
             LED((int)currentFrame[transformObjects][pointNo][0],(int)currentFrame[transformObjects][pointNo][1],(int)currentFrame[transformObjects][pointNo][2],R,G,B);
           }
         }
-        
       }
+
       delay(150);
     }
  }
@@ -4664,11 +4688,11 @@ void displayScrollingLetter(char c, int R, int G, int B) {
       for (int steps = 0; steps < scrollingTextTransformSteps; steps++) {
         for (int transformObjects = 0 ; transformObjects < scrollingTextTransformObjects; transformObjects++) {
         if (steps == 0) {
-          MultiplyIntMatrix((int*)pointsArray, (int*)scrollingTextTransform[transformObjects][steps], pointCounter, 4, 4, (int*)currentFrame[transformObjects]);
+          MultiplyIntMatrixPROGMEM((int*)pointsArray, (int*)scrollingTextTransform[transformObjects][steps], pointCounter, 4, 4, (int*)currentFrame[transformObjects]);
           CopyIntMatrix((int*)currentFrame[transformObjects], pointCounter, 4, (int*)previousFrame[transformObjects]);   
         } else {
           CopyIntMatrix((int*)currentFrame[transformObjects], pointCounter, 4, (int*)previousFrame[transformObjects]);
-          MultiplyIntMatrix((int*)pointsArray, (int*)scrollingTextTransform[transformObjects][steps], pointCounter, 4, 4, (int*)currentFrame[transformObjects]);
+          MultiplyIntMatrixPROGMEM((int*)pointsArray, (int*)scrollingTextTransform[transformObjects][steps], pointCounter, 4, 4, (int*)currentFrame[transformObjects]);
         }
         for (int pointNo = 0; pointNo < pointCounter; pointNo++) {
           if (previousFrame[transformObjects][pointNo][0] >= 0 && previousFrame[transformObjects][pointNo][0] < 8 && previousFrame[transformObjects][pointNo][1] >= 0 && previousFrame[transformObjects][pointNo][1] < 8 && previousFrame[transformObjects][pointNo][2] >= 0 && previousFrame[transformObjects][pointNo][2] < 8) {
