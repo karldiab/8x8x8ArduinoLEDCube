@@ -1650,19 +1650,6 @@ interrupts();//let the show begin, this lets the multiplexing start
 
 void loop(){//***start loop***start loop***start loop***start loop***start loop***start loop***start loop***start loop***start loop
   long startTime = millis();
-  hyperCube(routineSettings[currentRoutine]);
-  //flash cube a bright color so I know its done
-  int ii, jj, kk;
-    for(ii=0; ii<8; ii++)
-  for(jj=0; jj<8; jj++)
-  for(kk=0; kk<8; kk++)
-  LED(ii,jj,kk,0,15,15);
-  delay(1000);
-  clean();
-  Serial.print("Took ");
-  Serial.print(String((millis() - startTime)/1000));
-  Serial.println("s to run");
-  return;
 //Serial.print("START LOOP currentRoutine ");Serial.println(currentRoutine);
 //Each animation located in a sub routine
 // To control an LED, you simply:
@@ -1752,6 +1739,9 @@ void loop(){//***start loop***start loop***start loop***start loop***start loop*
       case 14 :
       {
         rainVersionTwo(routineSettings[currentRoutine]);
+        Serial.print("Took ");
+        Serial.print(String((millis() - startTime)/1000));
+        Serial.println("s to run");
       }
       default : 
       {
@@ -2426,7 +2416,7 @@ void spirals(int* settings) {
 
 void dancingCube(int* settings) {
   clean();
-  int iterations = 7 * pow(2,settings[0]);
+  int iterations = 1 * pow(2,settings[0]);
   int numberOfPoints = sizeof(smallCube)/sizeof(smallCube[0]);
   float cube[numberOfPoints][4];
   float transformedCube[numberOfPoints][4];
@@ -2514,7 +2504,7 @@ void hyperCube(int* settings) {
     }
     firstRun = false;
     int yShift;
-    delay(2000*random(1,4));
+    delay(150*random(1,4));
     for (int frame = 7; frame > -8; frame--) {
       for (int i = 0; i < 120; i++) {
         int xyzPosition = pgm_read_byte_near(&hyperCubePoints[i][colorShiftDirection]);
@@ -2533,7 +2523,7 @@ void hyperCube(int* settings) {
         startingColor[2] = pgm_read_word_near(&colorSets[colorSet][yShift][2]);
       }
     }
-    delay(2000*random(1,4));
+    delay(150*random(1,4));
     oldStartingColor[0] = startingColor[0];
     oldStartingColor[1] = startingColor[1];
     oldStartingColor[2] = startingColor[2];
@@ -2834,9 +2824,6 @@ void fireworks (int iterations, int n, int delayx, int* settings)
   clean;
   //iterations *= pow(2,settings[0]);
   n *= 0.1 * (settings[1] + 4);
-  Serial.println("n = ");
-  Serial.println(n);
-  Serial.print("iterations = ");Serial.println(iterations);
   int i,f,e,x;
 
   float origin_x = 3;
