@@ -1650,13 +1650,14 @@ interrupts();//let the show begin, this lets the multiplexing start
 
 void loop(){//***start loop***start loop***start loop***start loop***start loop***start loop***start loop***start loop***start loop
   long startTime = millis();
-  folder(routineSettings[currentRoutine]);
+  hyperCube(routineSettings[currentRoutine]);
+  //flash cube a bright color so I know its done
   int ii, jj, kk;
     for(ii=0; ii<8; ii++)
   for(jj=0; jj<8; jj++)
   for(kk=0; kk<8; kk++)
   LED(ii,jj,kk,0,15,15);
-  delay(5000);
+  delay(1000);
   clean();
   Serial.print("Took ");
   Serial.print(String((millis() - startTime)/1000));
@@ -1689,19 +1690,19 @@ void loop(){//***start loop***start loop***start loop***start loop***start loop*
       }
       case 3 : 
       {
-        rainVersionTwo(routineSettings[currentRoutine]);
+        folder(routineSettings[currentRoutine]);
         clean(); 
         break;
       }
       case 4 : 
       {
-        folder(routineSettings[currentRoutine]);
+        displayTextRoutine(routineSettings[currentRoutine]);
         clean();
         break;
       }
       case 5 : 
       {
-        wipe_out();
+        hyperCube(routineSettings[currentRoutine]);
         clean();
         break;
       }
@@ -1712,13 +1713,13 @@ void loop(){//***start loop***start loop***start loop***start loop***start loop*
       }
       case 7 : 
       {
-        color_wheelTWO();
+        sinwaveTwo();
         clean();
         break;
       }
       case 8 : 
       {
-        harlem_shake();
+        color_wheelTWO();
         clean();
         break;
       }
@@ -1740,17 +1741,17 @@ void loop(){//***start loop***start loop***start loop***start loop***start loop*
       }
       case 12 :
       {
-        hyperCube(routineSettings[currentRoutine]);
+        wipe_out();
         clean();
       }
       case 13 :
       {
-        sinwaveTwo();
+        harlem_shake();
         clean();
       }
       case 14 :
       {
-        displayTextRoutine(routineSettings[currentRoutine]);
+        rainVersionTwo(routineSettings[currentRoutine]);
       }
       default : 
       {
@@ -2027,7 +2028,7 @@ pinMode(blank_pin, OUTPUT);//moved down here so outputs are all off until the fi
 void glowingCube(int* settings) {
   clean();
   int upOrDown;
-  int iterations = 50 * pow(2,settings[0]);
+  int iterations = 20 * pow(2,settings[0]);
   int numberOfFrames = 17;
   bool edgeCurrentlyGlowing[numberOfFrames] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
   //first 3 items are xyz of current glow location, 4th item indicates whether its x y or z that changes, 5th is which frame edge is currently on, 6th is direction of travel
@@ -3241,7 +3242,7 @@ void folder(int* settings){//****folder****folder****folder****folder****folder*
   
   
   start=millis();
-  while(millis()-start<2000*pow(2,settings[0])){ 
+  while(millis()-start<1400*pow(2,settings[0])){ 
     if (interrupted) {
       interruptRoutine(true);
       return;
