@@ -112,7 +112,7 @@ const int colorSets[numberOfColorSets][8][3] PROGMEM = {
   {{0, 15, 0},{1, 12, 2},{2, 11, 7},{3, 9, 10},{4, 7, 11},{5, 5, 13},{6, 4, 14},{6, 3, 15}}//green to purple
  };
 #define numberOfMessages 4
-String messages[numberOfMessages] = {"?","X","!","BASS"};
+String messages[numberOfMessages] = {"?","X","!","CUBE"};
 //Object transform variables
 #define scrollingTextTransformSteps 14
 byte scrollingTestStepsTillCleared = 8;
@@ -1644,11 +1644,24 @@ pinMode(layer8, OUTPUT);
 
 SPI.begin();//start up the SPI library
 interrupts();//let the show begin, this lets the multiplexing start
-randomSeed(analogRead(1));
+//randomSeed(analogRead(1));
 }//***end setup***end setup***end setup***end setup***end setup***end setup***end setup***end setup***end setup***end setup
 
 
 void loop(){//***start loop***start loop***start loop***start loop***start loop***start loop***start loop***start loop***start loop
+  long startTime = millis();
+  folder(routineSettings[currentRoutine]);
+  int ii, jj, kk;
+    for(ii=0; ii<8; ii++)
+  for(jj=0; jj<8; jj++)
+  for(kk=0; kk<8; kk++)
+  LED(ii,jj,kk,0,15,15);
+  delay(5000);
+  clean();
+  Serial.print("Took ");
+  Serial.print(String((millis() - startTime)/1000));
+  Serial.println("s to run");
+  return;
 //Serial.print("START LOOP currentRoutine ");Serial.println(currentRoutine);
 //Each animation located in a sub routine
 // To control an LED, you simply:
@@ -1717,7 +1730,7 @@ void loop(){//***start loop***start loop***start loop***start loop***start loop*
       }
       case 10 :
       {
-        fireworks(40,15,0,routineSettings[currentRoutine]);
+        fireworks(5,15,0,routineSettings[currentRoutine]);
         break;
       }
       case 11 : 
@@ -2014,7 +2027,7 @@ pinMode(blank_pin, OUTPUT);//moved down here so outputs are all off until the fi
 void glowingCube(int* settings) {
   clean();
   int upOrDown;
-  int iterations = 500 * pow(2,settings[0]);
+  int iterations = 50 * pow(2,settings[0]);
   int numberOfFrames = 17;
   bool edgeCurrentlyGlowing[numberOfFrames] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
   //first 3 items are xyz of current glow location, 4th item indicates whether its x y or z that changes, 5th is which frame edge is currently on, 6th is direction of travel
@@ -2080,10 +2093,10 @@ void glowingCube(int* settings) {
 
 void spirals(int* settings) {
   int delayFactor = 3*(settings[1]+1);
-  int iterationSeed = random(18)+3;
-  int iterations = iterationSeed*(settings[0]+1);
+  int iterationSeed = 2;
+  int iterations = iterationSeed*(settings[0]);
   for (int runNumber = 0; runNumber < iterations; runNumber++) {
-    iterations = iterationSeed*(settings[0]+1);
+    //iterations = iterationSeed*(settings[0]+1);
     int colorSet = random(numberOfColorSets);
     //LED(Y,X,Z,R,G,B);
     //start by making all faces light up by spiraling in from the outside. Each run through this has a color set chosen randomly (colorSet) which is a random index for the array of color sets, each set has 8 colors
@@ -2412,7 +2425,7 @@ void spirals(int* settings) {
 
 void dancingCube(int* settings) {
   clean();
-  int iterations = 20 * pow(2,settings[0]);
+  int iterations = 7 * pow(2,settings[0]);
   int numberOfPoints = sizeof(smallCube)/sizeof(smallCube[0]);
   float cube[numberOfPoints][4];
   float transformedCube[numberOfPoints][4];
@@ -2474,7 +2487,7 @@ void hyperCube(int* settings) {
   bool firstRun = true;
   byte startingColor[3];
   byte oldStartingColor[3];
-  int duration = random(1,4)*10*(settings[0]+1);
+  int duration = 4;//random(1,4)*10*(settings[0]+1);
   for (int runs = 0; runs < duration; runs++) {
     //0 = y 1 = x 2 = z
     byte colorShiftDirection = random(3);
@@ -2550,11 +2563,11 @@ void rubiksCube(int* options) {
   }
   delay(2000);
   int newStickers[6][3][3];
-  byte iterations = random(40);
+  byte iterations = 9;
   int rotations[40];
   bool directions[40];
-  for (int x = 0; x < 2*(options[0]+1); x++) {
-    iterations = random(40);
+  for (int x = 0; x < 1; x++) {
+    //iterations = random(20);
   int rotations[40];
   for (int i = 0; i < iterations; i++) {
      if (interrupted) {
@@ -2818,7 +2831,7 @@ void printFloatMatrix(float* A, int m, int n, String label)
 void fireworks (int iterations, int n, int delayx, int* settings)
 {
   clean;
-  iterations *= pow(2,settings[0]);
+  //iterations *= pow(2,settings[0]);
   n *= 0.1 * (settings[1] + 4);
   Serial.println("n = ");
   Serial.println(n);
@@ -2956,7 +2969,7 @@ void wipe_out(){//*****wipe_out*****wipe_out*****wipe_out*****wipe_out*****wipe_
       bbt=random(1, 16);}  
         start=millis();
       
-  while(millis()-start<100000){
+  while(millis()-start<10000){
         if (interrupted) {
       interruptRoutine(true);
       return;
@@ -3069,7 +3082,7 @@ void rainVersionTwo(int* settings){//****rainVersionTwo****rainVersionTwo****rai
     zz[addr]=random(16);     
   }
   start=millis();
-  while(millis()-start<(30000*pow(2,settings[0]))){
+  while(millis()-start<(2000*pow(2,settings[0]))){
   //wipe_out();
   //for(addr=0; addr<leds; addr++)
   //LED(zold[addr], xold[addr], yold[addr], 0, 0, 0);
@@ -3102,7 +3115,7 @@ if(ledcolor<200){
   LED(z[addr], x[addr], y[addr], 10, 0, 1);
 }}//200
 
-  if(ledcolor>=200&&ledcolor<300){
+  else if(ledcolor>=200&&ledcolor<300){
   for(addr=0; addr<leds; addr++){
     LED(zold[addr], xold[addr], yold[addr], 0, 0, 0);
   if(z[addr]>=7)
@@ -3123,16 +3136,34 @@ if(ledcolor<200){
   LED(z[addr], x[addr], y[addr], 10, 0, 0);
 }}//300
 
-    if(ledcolor>=300&&ledcolor<400){
-
-  }
+    else if(ledcolor>=300&&ledcolor<400){
+    for(addr=0; addr<leds; addr++){
+      //{{15, 0, 0},{15, 6, 0},{15, 15, 0},{9, 14, 0},{0, 15, 0},{0, 15, 15},{0, 0, 15},{6, 3, 15}}
+    LED(zold[addr], xold[addr], yold[addr], 0, 0, 0);
+    if(z[addr]>=7)
+    LED(z[addr], x[addr], y[addr], 15, 0, 0);
+    if(z[addr]==6)
+    LED(z[addr], x[addr], y[addr], 15, 6, 0);
+     if(z[addr]==5)
+    LED(z[addr], x[addr], y[addr], 15, 15, 0);
+     if(z[addr]==4)
+    LED(z[addr], x[addr], y[addr], 9, 14, 0); 
+      if(z[addr]==3)
+    LED(z[addr], x[addr], y[addr], 0, 15, 0);
+      if(z[addr]==2)
+    LED(z[addr], x[addr], y[addr], 0, 15, 15);
+      if(z[addr]==1)
+    LED(z[addr], x[addr], y[addr], 0, 0, 15);
+      if(z[addr]<=0)
+    LED(z[addr], x[addr], y[addr], 6, 3, 15);
+    }}
      if(ledcolor>=500&&ledcolor<600){
 
 }
   
   
-  ledcolor++;
-if(ledcolor>=300)
+  ledcolor+= 3;
+if(ledcolor>=400)
 ledcolor=0;
   
     for(addr=0; addr<leds; addr++){
@@ -3210,7 +3241,7 @@ void folder(int* settings){//****folder****folder****folder****folder****folder*
   
   
   start=millis();
-  while(millis()-start<50000*pow(2,settings[0])){ 
+  while(millis()-start<2000*pow(2,settings[0])){ 
     if (interrupted) {
       interruptRoutine(true);
       return;
@@ -3796,7 +3827,7 @@ void sinwaveTwo(){//*****sinewaveTwo*****sinewaveTwo*****sinewaveTwo*****sinewav
   
       start=millis();
       
-  while(millis()-start<75000){
+  while(millis()-start<15000){
     if (interrupted) {
       interruptRoutine(true);
       return;
@@ -3951,7 +3982,7 @@ void color_wheelTWO(){//*****colorWheelTwo*****colorWheelTwo*****colorWheelTwo**
   
         start=millis();
       
-  while(millis()-start<100000){
+  while(millis()-start<15000){
     if (interrupted) {
       interruptRoutine(true);
       return;
@@ -4776,7 +4807,7 @@ void displaySolidText(String s, int delayms,int R, int G, int B) {
   delay(delayms);
 }
 void displayTextRoutine(int* settings) {
-  for (int i = 0; i < pow(2,settings[0]+1);i++) {
+  for (int i = 0; i < 3;i++) {
      if (interrupted) {
       interruptRoutine(true);
       return;
