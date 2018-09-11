@@ -1689,7 +1689,7 @@ void loop(){//***start loop***start loop***start loop***start loop***start loop*
       }
       case 5 : 
       {
-        hyperCube(routineSettings[currentRoutine]);
+        tesseract(routineSettings[currentRoutine]);
         clean();
         break;
       }
@@ -2446,7 +2446,7 @@ void dancingCube(int* settings) {
     clean();
   }
 }
-const byte hyperCubePoints[120][3] PROGMEM = {
+const byte tesseractPoints[120][3] PROGMEM = {
   {0,0,0},{0,0,1},{0,0,2},{0,0,3},{0,0,4},{0,0,5},{0,0,6},{0,0,7},
   {0,1,0},{0,2,0},{0,3,0},{0,4,0},{0,5,0},{0,6,0},{0,7,0},
   {1,0,0},{2,0,0},{3,0,0},{4,0,0},{5,0,0},{6,0,0},{7,0,0},
@@ -2473,7 +2473,7 @@ const byte hyperCubePoints[120][3] PROGMEM = {
   {3,5,2},{4,5,2},
   {1,1,1},{1,6,1},{1,6,6},{1,1,6},{6,1,1},{6,6,1},{6,6,6},{6,1,6}
 };
-void hyperCube(int* settings) { 
+void tesseract(int* settings) { 
   clean();
   bool firstRun = true;
   byte startingColor[3];
@@ -2493,13 +2493,13 @@ void hyperCube(int* settings) {
         int G = map(frame,0,6,oldStartingColor[1],startingColor[1]);
         int B = map(frame,0,6,oldStartingColor[2],startingColor[2]);
         for (int i = 0; i < 120; i++) {
-            LED(pgm_read_byte_near(&hyperCubePoints[i][0]),pgm_read_byte_near(&hyperCubePoints[i][1]),pgm_read_byte_near(&hyperCubePoints[i][2]),R,G,B);
+            LED(pgm_read_byte_near(&tesseractPoints[i][0]),pgm_read_byte_near(&tesseractPoints[i][1]),pgm_read_byte_near(&tesseractPoints[i][2]),R,G,B);
         }
         delay(150);
       }
     } else {
       for (int i = 0; i < 120; i++) {
-          LED(pgm_read_byte_near(&hyperCubePoints[i][0]),pgm_read_byte_near(&hyperCubePoints[i][1]),pgm_read_byte_near(&hyperCubePoints[i][2]),startingColor[0],startingColor[1],startingColor[2]);
+          LED(pgm_read_byte_near(&tesseractPoints[i][0]),pgm_read_byte_near(&tesseractPoints[i][1]),pgm_read_byte_near(&tesseractPoints[i][2]),startingColor[0],startingColor[1],startingColor[2]);
       }
     }
     firstRun = false;
@@ -2507,14 +2507,14 @@ void hyperCube(int* settings) {
     delay(150*random(1,4));
     for (int frame = 7; frame > -8; frame--) {
       for (int i = 0; i < 120; i++) {
-        int xyzPosition = pgm_read_byte_near(&hyperCubePoints[i][colorShiftDirection]);
+        int xyzPosition = pgm_read_byte_near(&tesseractPoints[i][colorShiftDirection]);
         if (colorDirection) {
           yShift = xyzPosition + frame > 7 ? 7 : xyzPosition + frame;
         } else {
           yShift = xyzPosition - frame > 7 ? 7 : xyzPosition - frame;
         }
           yShift = yShift < 0 ? 0 : yShift;
-          LED(pgm_read_byte_near(&hyperCubePoints[i][0]),pgm_read_byte_near(&hyperCubePoints[i][1]),pgm_read_byte_near(&hyperCubePoints[i][2]),pgm_read_word_near(&colorSets[colorSet][yShift][0]),pgm_read_word_near(&colorSets[colorSet][yShift][1]),pgm_read_word_near(&colorSets[colorSet][yShift][2]));
+          LED(pgm_read_byte_near(&tesseractPoints[i][0]),pgm_read_byte_near(&tesseractPoints[i][1]),pgm_read_byte_near(&tesseractPoints[i][2]),pgm_read_word_near(&colorSets[colorSet][yShift][0]),pgm_read_word_near(&colorSets[colorSet][yShift][1]),pgm_read_word_near(&colorSets[colorSet][yShift][2]));
       }
       delay(150);
       if (frame == -7) {
@@ -2530,7 +2530,7 @@ void hyperCube(int* settings) {
     if (random(1000) < 30) {
       for (int runs = 0; runs < 300; runs++) {
         for (int i = 0; i < 120; i++) {
-            LED(pgm_read_byte_near(&hyperCubePoints[i][0]),pgm_read_byte_near(&hyperCubePoints[i][1]),pgm_read_byte_near(&hyperCubePoints[i][2]),random(13),random(16),random(16));
+            LED(pgm_read_byte_near(&tesseractPoints[i][0]),pgm_read_byte_near(&tesseractPoints[i][1]),pgm_read_byte_near(&tesseractPoints[i][2]),random(13),random(16),random(16));
         }
       }
     }

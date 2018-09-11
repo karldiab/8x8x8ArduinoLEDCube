@@ -20,7 +20,7 @@ Rubiks cube scrambles itself in a random number of steps then solves itself
 
 Can display any ASCII message as a scrolling colored letters on the side cube faces, or from an array of messages randomly.
 
-**Hypercube**
+**Tesseract**
 
 The tesseract demands respect
 
@@ -28,7 +28,7 @@ The tesseract demands respect
 
 Sparkling particles run along the cube's edges
 
-**Sin Wave** (default)
+**Sine Wave** (default)
 
 Cool moving sine wave patterns. Probably my favorite animation
 
