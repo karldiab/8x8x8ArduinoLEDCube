@@ -1739,6 +1739,7 @@ void loop(){//***start loop***start loop***start loop***start loop***start loop*
       case 14 :
       {
         rainVersionTwo(routineSettings[currentRoutine]);
+        clean();
         Serial.print("Took ");
         Serial.print(String((millis() - startTime)/1000));
         Serial.println("s to run");
