@@ -4560,8 +4560,8 @@ void interruptRoutine(bool resetInterrupt){
 }
 
 void displaySolidText(String s, int delayms,int R, int G, int B) {
-  for (int i = 0; i < strlen(s); i++) {
-    displaySolidLetter(s.charAt(i),R,G,B);
+  for (int i = 0; i < s.length(); i++) {
+    displaySolidLetter(s[i],R,G,B);
     delay(delayms);
   }
   displaySolidLetter(' ',R,G,B);
@@ -4608,8 +4608,8 @@ void displayTextRoutine(int* settings) {
   
 }
 void displaySolidColoredText(String s, int delayms, int colorSet) {
-  for (int i = 0; i < strlen(s); i++) {
-    displaySolidColoredLetter(s.charAt(i),colorSet);
+  for (int i = 0; i < s.length(); i++) {
+    displaySolidColoredLetter(s[i],colorSet);
     delay(delayms);
   }
   displaySolidLetter(' ',0,0,0);
@@ -4622,20 +4622,20 @@ void displaySingleChar(char c, int delayms,int R, int G, int B) {
 }
 
 void displayScrollingText(String s,int R, int G, int B) {
-  for (int i = 0; i < strlen(s); i++) {
-    displayScrollingLetter(s.charAt(i),R,G,B);
+  for (int i = 0; i < s.length(); i++) {
+    displayScrollingLetter(s[i],R,G,B);
   }
 }
 void displayScrollingColoredText(String s,int colorSet) {
-  for (int i = 0; i < strlen(s); i++) {
-    displayScrollingColoredLetter(s.charAt(i),colorSet);
+  for (int i = 0; i < s.length(); i++) {
+    displayScrollingColoredLetter(s[i],colorSet);
   }
 }
 void displayScrollingRandomText() {
   String s = messages[random(numberOfMessages)];
   byte color = random(numberOfColorSets);
-  for (int i = 0; i < strlen(s); i++) {
-    displayScrollingColoredLetter(s.charAt(i),color);
+  for (int i = 0; i < s.length(); i++) {
+    displayScrollingColoredLetter(s[i],color);
   }
 }
 
