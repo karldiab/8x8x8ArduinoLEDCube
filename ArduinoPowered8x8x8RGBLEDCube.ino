@@ -1,7 +1,7 @@
 
 #include <SPI.h>// SPI Library used to clock data out to the shift registers
 #include <string.h>
-#include <MatrixMath.h>
+#include "MatrixMath.h"
 #include <avr/pgmspace.h>
 
 #define latch_pin 4// Defines actual BIT of PortD for latch - is Arduino UNO pin 2, MEGA pin 4
