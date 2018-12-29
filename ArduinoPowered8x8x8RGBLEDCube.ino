@@ -1954,9 +1954,9 @@ void glowingCube(int* settings) {
   int upOrDown;
   int iterations = 20 * pow(2,settings[0]);
   int numberOfFrames = 17;
-  bool edgeCurrentlyGlowing[numberOfFrames] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+  bool edgeCurrentlyGlowing[17] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
   //first 3 items are xyz of current glow location, 4th item indicates whether its x y or z that changes, 5th is which frame edge is currently on, 6th is direction of travel
-  int edgeCurrentFrame[numberOfFrames][6] = {
+  int edgeCurrentFrame[][6] = {
     {0,0,0,2,0,1},
     {0,0,7,1,0,1},
     {0,7,7,2,0,-1},
@@ -1975,10 +1975,6 @@ void glowingCube(int* settings) {
     {0,7,0,1,0,-1},
     {0,0,0,2,0,1}};
   for (int i = 0; i < iterations; i++) {
-    if (interrupted) {
-      interruptRoutine(true);
-      return;
-    }
     for (int j = 0; j < numberOfFrames; j++) {
       if (edgeCurrentlyGlowing[j] != 0) {
         if (edgeCurrentFrame[j][4] == 8) {
@@ -2040,10 +2036,6 @@ void spirals(int* settings) {
       LED(i,7,7,pgm_read_word_near(&colorSets[colorSet][i][0]),pgm_read_word_near(&colorSets[colorSet][i][1]),pgm_read_word_near(&colorSets[colorSet][i][2]));
       delay(delayFactor);
     }
-    if (interrupted) {//This checks if a button was pressed, if so do the proper action (next routine, change setting, etc.) then exit this routine
-      interruptRoutine(true);
-      return;
-    }
     for (int i = 6; i >= 1; i--) {
       LED(7,i,0,pgm_read_word_near(&colorSets[colorSet][7][0]),pgm_read_word_near(&colorSets[colorSet][7][1]),pgm_read_word_near(&colorSets[colorSet][7][2]));
       LED(7,i,7,pgm_read_word_near(&colorSets[colorSet][7][0]),pgm_read_word_near(&colorSets[colorSet][7][1]),pgm_read_word_near(&colorSets[colorSet][7][2]));
@@ -2057,10 +2049,6 @@ void spirals(int* settings) {
       LED(i,0,0,pgm_read_word_near(&colorSets[colorSet][i][0]),pgm_read_word_near(&colorSets[colorSet][i][1]),pgm_read_word_near(&colorSets[colorSet][i][2]));
       LED(i,7,7,pgm_read_word_near(&colorSets[colorSet][i][0]),pgm_read_word_near(&colorSets[colorSet][i][1]),pgm_read_word_near(&colorSets[colorSet][i][2]));
       delay(delayFactor);
-    }
-    if (interrupted) {//This checks if a button was pressed, if so do the proper action (next routine, change setting, etc.) then exit this routine
-      interruptRoutine(true);
-      return;
     }
     for (int i = 1; i < 7; i++) {//start first inner square
       LED(1,i,0,pgm_read_word_near(&colorSets[colorSet][1][0]),pgm_read_word_near(&colorSets[colorSet][1][1]),pgm_read_word_near(&colorSets[colorSet][1][2]));//front face
@@ -2080,10 +2068,6 @@ void spirals(int* settings) {
       LED(7,6,i,pgm_read_word_near(&colorSets[colorSet][7][0]),pgm_read_word_near(&colorSets[colorSet][7][1]),pgm_read_word_near(&colorSets[colorSet][7][2]));
       delay(delayFactor);
     }
-    if (interrupted) {//This checks if a button was pressed, if so do the proper action (next routine, change setting, etc.) then exit this routine
-      interruptRoutine(true);
-      return;
-    }
     for (int i = 6; i > 1; i--) {
       LED(6,i,0,pgm_read_word_near(&colorSets[colorSet][6][0]),pgm_read_word_near(&colorSets[colorSet][6][1]),pgm_read_word_near(&colorSets[colorSet][6][2]));
       LED(6,i,7,pgm_read_word_near(&colorSets[colorSet][6][0]),pgm_read_word_near(&colorSets[colorSet][6][1]),pgm_read_word_near(&colorSets[colorSet][6][2]));
@@ -2101,10 +2085,6 @@ void spirals(int* settings) {
       LED(0,1,i,pgm_read_word_near(&colorSets[colorSet][0][0]),pgm_read_word_near(&colorSets[colorSet][0][1]),pgm_read_word_near(&colorSets[colorSet][0][2]));
       LED(7,1,i,pgm_read_word_near(&colorSets[colorSet][7][0]),pgm_read_word_near(&colorSets[colorSet][7][1]),pgm_read_word_near(&colorSets[colorSet][7][2]));
       delay(delayFactor);
-    }
-    if (interrupted) {//This checks if a button was pressed, if so do the proper action (next routine, change setting, etc.) then exit this routine
-      interruptRoutine(true);
-      return;
     }
     for (int i = 2; i < 6; i++) {//start second inner square
       LED(2,i,0,pgm_read_word_near(&colorSets[colorSet][2][0]),pgm_read_word_near(&colorSets[colorSet][2][1]),pgm_read_word_near(&colorSets[colorSet][2][2]));
@@ -2124,10 +2104,6 @@ void spirals(int* settings) {
       LED(7,5,i,pgm_read_word_near(&colorSets[colorSet][7][0]),pgm_read_word_near(&colorSets[colorSet][7][1]),pgm_read_word_near(&colorSets[colorSet][7][2]));
       delay(delayFactor);
     }
-    if (interrupted) {//This checks if a button was pressed, if so do the proper action (next routine, change setting, etc.) then exit this routine
-      interruptRoutine(true);
-      return;
-    }
     for (int i = 5; i > 2; i--) {
       LED(5,i,0,pgm_read_word_near(&colorSets[colorSet][5][0]),pgm_read_word_near(&colorSets[colorSet][5][1]),pgm_read_word_near(&colorSets[colorSet][5][2]));
       LED(5,i,7,pgm_read_word_near(&colorSets[colorSet][5][0]),pgm_read_word_near(&colorSets[colorSet][5][1]),pgm_read_word_near(&colorSets[colorSet][5][2]));
@@ -2146,10 +2122,6 @@ void spirals(int* settings) {
       LED(7,2,i,pgm_read_word_near(&colorSets[colorSet][7][0]),pgm_read_word_near(&colorSets[colorSet][7][1]),pgm_read_word_near(&colorSets[colorSet][7][2]));
       delay(delayFactor);
     }
-    if (interrupted) {//This checks if a button was pressed, if so do the proper action (next routine, change setting, etc.) then exit this routine
-      interruptRoutine(true);
-      return;
-    }
     LED(3,3,0,pgm_read_word_near(&colorSets[colorSet][3][0]),pgm_read_word_near(&colorSets[colorSet][3][1]),pgm_read_word_near(&colorSets[colorSet][3][2]));//start third inner square
     LED(3,3,7,pgm_read_word_near(&colorSets[colorSet][3][0]),pgm_read_word_near(&colorSets[colorSet][3][1]),pgm_read_word_near(&colorSets[colorSet][3][2]));
     LED(3,0,3,pgm_read_word_near(&colorSets[colorSet][3][0]),pgm_read_word_near(&colorSets[colorSet][3][1]),pgm_read_word_near(&colorSets[colorSet][3][2]));
@@ -2164,10 +2136,6 @@ void spirals(int* settings) {
     LED(0,4,3,pgm_read_word_near(&colorSets[colorSet][0][0]),pgm_read_word_near(&colorSets[colorSet][0][1]),pgm_read_word_near(&colorSets[colorSet][0][2]));
     LED(7,4,3,pgm_read_word_near(&colorSets[colorSet][7][0]),pgm_read_word_near(&colorSets[colorSet][7][1]),pgm_read_word_near(&colorSets[colorSet][7][2]));
     delay(delayFactor);
-    if (interrupted) {//This checks if a button was pressed, if so do the proper action (next routine, change setting, etc.) then exit this routine
-      interruptRoutine(true);
-      return;
-    }
     LED(4,4,0,pgm_read_word_near(&colorSets[colorSet][4][0]),pgm_read_word_near(&colorSets[colorSet][4][1]),pgm_read_word_near(&colorSets[colorSet][4][2]));
     LED(4,4,7,pgm_read_word_near(&colorSets[colorSet][4][0]),pgm_read_word_near(&colorSets[colorSet][4][1]),pgm_read_word_near(&colorSets[colorSet][4][2]));
     LED(4,0,4,pgm_read_word_near(&colorSets[colorSet][4][0]),pgm_read_word_near(&colorSets[colorSet][4][1]),pgm_read_word_near(&colorSets[colorSet][4][2]));
@@ -2183,10 +2151,6 @@ void spirals(int* settings) {
     LED(0,3,4,pgm_read_word_near(&colorSets[colorSet][0][0]),pgm_read_word_near(&colorSets[colorSet][0][1]),pgm_read_word_near(&colorSets[colorSet][0][2]));
     LED(7,3,4,pgm_read_word_near(&colorSets[colorSet][7][0]),pgm_read_word_near(&colorSets[colorSet][7][1]),pgm_read_word_near(&colorSets[colorSet][7][2]));//end third inner square
     delay(delayFactor);
-    if (interrupted) {//This checks if a button was pressed, if so do the proper action (next routine, change setting, etc.) then exit this routine
-      interruptRoutine(true);
-      return;
-    }
     //Cool beans, now do the spiral thing again in reverse but change LED colors to 0,0,0 to turn them off. This will make the spiral undo itself from the inside
     LED(4,3,0,0,0,0);
     LED(4,3,7,0,0,0);
@@ -2202,10 +2166,6 @@ void spirals(int* settings) {
     LED(0,4,4,0,0,0);
     LED(7,4,4,0,0,0);
     delay(delayFactor);
-    if (interrupted) {//This checks if a button was pressed, if so do the proper action (next routine, change setting, etc.) then exit this routine
-      interruptRoutine(true);
-      return;
-    }
     LED(3,4,0,0,0,0);
     LED(3,4,7,0,0,0);
     LED(3,0,4,0,0,0);
@@ -2220,10 +2180,6 @@ void spirals(int* settings) {
     LED(0,3,3,0,0,0);
     LED(7,3,3,0,0,0);
     delay(delayFactor);
-    if (interrupted) {//This checks if a button was pressed, if so do the proper action (next routine, change setting, etc.) then exit this routine
-      interruptRoutine(true);
-      return;
-    }
     for (int i = 3; i <= 5; i++) {
       LED(i,2,0,0,0,0);
       LED(i,2,7,0,0,0);
@@ -2241,10 +2197,6 @@ void spirals(int* settings) {
       LED(0,i,5,0,0,0);
       LED(7,i,5,0,0,0);
       delay(delayFactor);
-    }
-    if (interrupted) {//This checks if a button was pressed, if so do the proper action (next routine, change setting, etc.) then exit this routine
-      interruptRoutine(true);
-      return;
     }
     for (int i = 5; i > 2; i--) {
       LED(i,5,0,0,0,0);
@@ -2264,10 +2216,6 @@ void spirals(int* settings) {
       LED(7,i,2,0,0,0);  
       delay(delayFactor);
     }
-    if (interrupted) {//This checks if a button was pressed, if so do the proper action (next routine, change setting, etc.) then exit this routine
-      interruptRoutine(true);
-      return;
-    }
     for (int i = 2; i <= 5; i++) {
       LED(i,1,0,0,0,0);
       LED(i,1,7,0,0,0);
@@ -2285,10 +2233,6 @@ void spirals(int* settings) {
       LED(0,i,6,0,0,0);
       LED(7,i,6,0,0,0);
       delay(delayFactor);
-    }
-    if (interrupted) {//This checks if a button was pressed, if so do the proper action (next routine, change setting, etc.) then exit this routine
-      interruptRoutine(true);
-      return;
     }
       for (int i = 7; i > 1; i--) {//d
       LED(i,6,0,0,0,0);
@@ -2308,10 +2252,6 @@ void spirals(int* settings) {
       LED(7,i,1,0,0,0);
       delay(delayFactor);
     }
-    if (interrupted) {//This checks if a button was pressed, if so do the proper action (next routine, change setting, etc.) then exit this routine
-      interruptRoutine(true);
-      return;
-    }
       for (int i = 1; i <= 7; i++) {
       LED(i,0,0,0,0,0);
       LED(i,0,7,0,0,0);
@@ -2325,10 +2265,6 @@ void spirals(int* settings) {
       LED(7,0,i,0,0,0);
       LED(7,7,i,0,0,0);
       delay(delayFactor);
-    }
-    if (interrupted) {//This checks if a button was pressed, if so do the proper action (next routine, change setting, etc.) then exit this routine
-      interruptRoutine(true);
-      return;
     }
       for (int i = 7; i > 0; i--) {
       LED(i,7,0,0,0,0);
@@ -2356,19 +2292,11 @@ void dancingCube(int* settings) {
   float transformedCube[numberOfPoints][4];
   for (int runs = 0; runs < iterations; runs++) {
     byte R = random(16), G = random(16), B = random(16);
-    if (interrupted) {
-      interruptRoutine(true);
-      return;
-    }
     CopyFloatMatrix((float*)smallCube, numberOfPoints, 4, (float*)cube);
     displayObject((float*) cube,numberOfPoints, R,G,B);
     delay(100*pow(2,settings[1]-6));
     int delayFactor = 50  *pow(2,settings[1]-6);
     for (int i = 0; i < dancingCubeTransformSteps; i++) {
-      if (interrupted) {
-        interruptRoutine(true);
-        return;
-      }
       MultiplyFloatMatrixPROGMEM((float*)cube, (float*)dancingCubeTransforms[i], numberOfPoints, 4, 4, (float*)transformedCube);
       
       
@@ -2482,10 +2410,6 @@ void rubiksCube(int* options) {
     }
   }
   displayRubiksCube((int*)faceStickers);
-  if (interrupted) {
-    interruptRoutine(true);
-    return;
-  }
   delay(2000);
   int newStickers[6][3][3];
   byte iterations = 9;
@@ -2495,10 +2419,6 @@ void rubiksCube(int* options) {
     //iterations = random(20);
   int rotations[40];
   for (int i = 0; i < iterations; i++) {
-     if (interrupted) {
-      interruptRoutine(true);
-      return;
-    }
     rotations[i] = random(6);
     directions[i] = random(1);
     rotateCube((int*)faceStickers, (int*) newStickers, rotations[i], directions[i]);
@@ -2513,10 +2433,6 @@ void rubiksCube(int* options) {
     displayRubiksCube((int*)newStickers);
   }
   for (int i = 0; i < iterations; i++) {
-     if (interrupted) {
-      interruptRoutine(true);
-      return;
-    }
     rotateCube((int*)faceStickers, (int*) newStickers, rotations[iterations-1-i], !directions[iterations-1-i]);
     for (int i=0; i< 6; i++) {
       for (int j = 0; j < 3;j++) {
@@ -2781,10 +2697,6 @@ void fireworks (int iterations, int n, int delayx, int* settings)
     origin_z +=5;
         origin_x +=2;
         origin_y +=2;
-    if (interrupted) {
-      interruptRoutine(true);
-      return;
-    }
     // shoot a particle up in the air
     for (e=0;e<origin_z;e++)
     {
@@ -2892,10 +2804,6 @@ void wipe_out(){//*****wipe_out*****wipe_out*****wipe_out*****wipe_out*****wipe_
         start=millis();
       
   while(millis()-start<10000){
-        if (interrupted) {
-      interruptRoutine(true);
-      return;
-    }
     //fx=random(8); fy=random(8); fz=random(8);
 
     LED(fxo, fyo, fzo, 0, 0, 0);
@@ -3005,13 +2913,6 @@ void rainVersionTwo(int* settings){//****rainVersionTwo****rainVersionTwo****rai
   }
   start=millis();
   while(millis()-start<(2000*pow(2,settings[0]))){
-  //wipe_out();
-  //for(addr=0; addr<leds; addr++)
-  //LED(zold[addr], xold[addr], yold[addr], 0, 0, 0);
-    if (interrupted) {
-      interruptRoutine(true);
-      return;
-    }
 if(ledcolor<200){
   for(addr=0; addr<leds; addr++){
     LED(zold[addr], xold[addr], yold[addr], 0, 0, 0);
@@ -3164,10 +3065,6 @@ void folder(int* settings){//****folder****folder****folder****folder****folder*
   
   start=millis();
   while(millis()-start<1400*pow(2,settings[0])){ 
-    if (interrupted) {
-      interruptRoutine(true);
-      return;
-    }
     if(top==1){
       if(side==0){
    //top to left-side
@@ -3618,10 +3515,6 @@ void bouncyvTwo(){//****bouncyTwo****bouncyTwo****bouncyTwo****bouncyTwo****boun
       start=millis();
       
   while(millis()-start<15000){
-    if (interrupted) {
-      interruptRoutine(true);
-      return;
-    }
     direct = random(3);
 
 for(addr=1; addr<ledcount+1; addr++){
@@ -3750,10 +3643,6 @@ void sinwaveTwo(){//*****sinewaveTwo*****sinewaveTwo*****sinewaveTwo*****sinewav
       start=millis();
       
   while(millis()-start<15000){
-    if (interrupted) {
-      interruptRoutine(true);
-      return;
-    }
   for(addr=0; addr<8; addr++){
     if(sinewavearray[addr]==7){
     sinemult[addr]=-1;
@@ -3848,10 +3737,6 @@ void color_wheel(){
         start=millis();
       
   while(millis()-start<100000){
-    if (interrupted) {
-      interruptRoutine(true);
-      return;
-    }
     swiper=random(3);
      ranx=random(16);
      rany=random(16);
@@ -3905,10 +3790,6 @@ void color_wheelTWO(){//*****colorWheelTwo*****colorWheelTwo*****colorWheelTwo**
         start=millis();
       
   while(millis()-start<15000){
-    if (interrupted) {
-      interruptRoutine(true);
-      return;
-    }
     swiper=random(6);
     select=random(3);
     if(select==0){
@@ -3949,10 +3830,6 @@ void color_wheelTWO(){//*****colorWheelTwo*****colorWheelTwo*****colorWheelTwo**
     }}
   delay(30);
 }}  
-    if (interrupted) {
-      interruptRoutine(true);
-      return;
-    }  
     if(swiper==3){
     for(yy=7;yy>=0;yy--){//right to left
     for(xx=0;xx<8;xx++){
@@ -4010,10 +3887,6 @@ for(counter=0; counter<150; counter++){
   
   oredx=redx;
   oredy=redy;
-    if (interrupted) {
-      interruptRoutine(true);
-      return;
-    }
 for(i=100; i>time_counter; i--)
   delay(1);
 
@@ -4038,10 +3911,6 @@ for(i=100; i>time_counter; i--)
   redx=redx+redmult;
 }//counter
 
-    if (interrupted) {
-      interruptRoutine(true);
-      return;
-    }
 for(counter=0; counter<85; counter++){
   for(i=0; i<8; i++){
   LED(i,oredx,oredx,0,0,0);
@@ -4090,11 +3959,6 @@ for(i=100; i>time_counter; i--)
   redy=redy+redmulty;
   redx=redx+redmult;
 }//counter
-
-    if (interrupted) {
-      interruptRoutine(true);
-      return;
-    }
 for(counter=0; counter<85; counter++){
   for(i=0; i<8; i++){
   LED(i,oredx,oredx,0,0,0);
@@ -4130,11 +3994,6 @@ for(i=100; i>time_counter; i--)
   redmulty=redmulty*-1;  
   
   }
- 
-    if (interrupted) {
-      interruptRoutine(true);
-      return;
-    }   
      if(greenx>6 || greenx<1){
   greenmult=greenmult*-1;
   greeny = greeny + greenmulty;
@@ -4159,11 +4018,6 @@ for(i=100; i>time_counter; i--)
   redx=redx+redmult;
 }//counter
 
-
-    if (interrupted) {
-      interruptRoutine(true);
-      return;
-    }
 for(counter=0; counter<3; counter++){ // counter was 3
   for(i=0; i<8; i++)
   for(j=0; j<8; j++)
@@ -4176,10 +4030,7 @@ for(counter=0; counter<3; counter++){ // counter was 3
   LED(i,j,k,0,0,0);
   delay(50);
 }//counter
-    if (interrupted) {
-      interruptRoutine(true);
-      return;
-    }
+
   for(m=0; m<1; m++){
     
     
@@ -4203,10 +4054,7 @@ for(counter=0; counter<3; counter++){ // counter was 3
   for(k=0; k<8; k++)
   LED(i,j,k,random(16),0,random(16));
   }
-    if (interrupted) {
-      interruptRoutine(true);
-      return;
-    }
+
 clean(); 
 // this is the random changing led colour full cube
 
@@ -4369,11 +4217,6 @@ LED(x2+1,y2-1,z2-1,c21,c22,c23);
 LED(x2-1,y2+1,z2-1,c21,c22,c23);
 LED(x2-1,y2-1,z2-1,c21,c22,c23);
 
-    if (interrupted) {
-      interruptRoutine(true);
-      return;
-    }
-
 
 x2o=x2;
 y2o=y2;
@@ -4456,10 +4299,6 @@ c1 = random(0,16);
 c2 = random(0,16);
 c3 = 0;}
   
-    if (interrupted) {
-      interruptRoutine(true);
-      return;
-    }  
 int num1=-1, num2=-4, num3=-6, num4=-10;
 for(m=0; m<20; m++){
   
@@ -4721,8 +4560,8 @@ void interruptRoutine(bool resetInterrupt){
 }
 
 void displaySolidText(String s, int delayms,int R, int G, int B) {
-  for (char c : s) {
-    displaySolidLetter(c,R,G,B);
+  for (int i = 0; i < strlen(s); i++) {
+    displaySolidLetter(s.charAt(i),R,G,B);
     delay(delayms);
   }
   displaySolidLetter(' ',R,G,B);
@@ -4730,10 +4569,6 @@ void displaySolidText(String s, int delayms,int R, int G, int B) {
 }
 void displayTextRoutine(int* settings) {
   for (int i = 0; i < 3;i++) {
-     if (interrupted) {
-      interruptRoutine(true);
-      return;
-    }
     if (settings[1]-6 < 0)
     settings[1] = 6;
     displayScrollingRandomText();
@@ -4773,12 +4608,8 @@ void displayTextRoutine(int* settings) {
   
 }
 void displaySolidColoredText(String s, int delayms, int colorSet) {
-  for (char c : s) {
-    displaySolidColoredLetter(c,colorSet);
-    if (interrupted) {
-      interruptRoutine(false);
-      return;
-    }
+  for (int i = 0; i < strlen(s); i++) {
+    displaySolidColoredLetter(s.charAt(i),colorSet);
     delay(delayms);
   }
   displaySolidLetter(' ',0,0,0);
@@ -4791,33 +4622,20 @@ void displaySingleChar(char c, int delayms,int R, int G, int B) {
 }
 
 void displayScrollingText(String s,int R, int G, int B) {
-  for (char c : s) {
-    displayScrollingLetter(c,R,G,B);
-     if (interrupted) {
-      interruptRoutine(false);
-      return;
-    }
+  for (int i = 0; i < strlen(s); i++) {
+    displayScrollingLetter(s.charAt(i),R,G,B);
   }
 }
 void displayScrollingColoredText(String s,int colorSet) {
-  for (char c : s) {
-    displayScrollingColoredLetter(c,colorSet);
-     if (interrupted) {
-      interruptRoutine(false);
-      return;
-    }
+  for (int i = 0; i < strlen(s); i++) {
+    displayScrollingColoredLetter(s.charAt(i),colorSet);
   }
 }
 void displayScrollingRandomText() {
   String s = messages[random(numberOfMessages)];
   byte color = random(numberOfColorSets);
-  for (char c : s) {
-    displayScrollingColoredLetter(c,color);
-    clean();
-     if (interrupted) {
-      interruptRoutine(false);
-      return;
-    }
+  for (int i = 0; i < strlen(s); i++) {
+    displayScrollingColoredLetter(s.charAt(i),color);
   }
 }
 
