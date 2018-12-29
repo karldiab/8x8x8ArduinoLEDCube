@@ -1587,10 +1587,6 @@ for (int i = 0; i < numberOfRoutines; i++) {
     }
   }
 }
-  // initialize the pushbutton pin as an input:
-pinMode(buttonPin, INPUT);
-// Attach an interrupt to the ISR vector
-attachInterrupt(digitalPinToInterrupt(buttonPin), pin_ISR, FALLING);
 Serial.begin(9600); 
 SPI.setBitOrder(MSBFIRST);//Most Significant Bit First
 SPI.setDataMode(SPI_MODE0);// Mode 0 Rising edge of data, keep clock low
@@ -1740,9 +1736,6 @@ void loop(){//***start loop***start loop***start loop***start loop***start loop*
       {
         rainVersionTwo(routineSettings[currentRoutine]);
         clean();
-        Serial.print("Took ");
-        Serial.print(String((millis() - startTime)/1000));
-        Serial.println("s to run");
       }
       default : 
       {
@@ -1754,66 +1747,6 @@ currentRoutine++;
 
 
 }//***end loop***end loop***end loop***end loop***end loop***end loop***end loop***end loop***end loop***end loop***end loop***end loop
-
-
-
-
-
-void pin_ISR() {
- if (millis() - lastTimeInterrupted < 400)
-  return;
- lastTimeInterrupted = millis();
- lcd_key = read_LCD_buttons();  // read the buttons
- interrupted = true;
- switch (lcd_key)               // depending on which button was pushed, we perform an action
- {
-   case btnRIGHT:
-     {
-      //currentRoutine++;
-     Serial.print("currentRoutine ");Serial.println(currentRoutine);
-     break;
-     }
-   case btnLEFT:
-     {
-     currentRoutine-=2;
-     Serial.print("currentRoutine ");Serial.println(currentRoutine);
-     break;
-     }
-   case btnUP:
-     {
-     if (++routineSettings[currentRoutine][currentSetting] > routineSettingsLimits[currentRoutine][currentSetting])
-      routineSettings[currentRoutine][currentSetting] = routineSettingsLimits[currentRoutine][currentSetting];
-     factorChange = true;
-     
-      Serial.print(settingNames[currentSetting]);Serial.print(" set to ");Serial.println(routineSettings[currentRoutine][currentSetting]);
-      Serial.print("currentRoutine ");Serial.println(currentRoutine);
-     break;
-     }
-   case btnDOWN:
-     {
-     if (--routineSettings[currentRoutine][currentSetting] < 0)
-      routineSettings[currentRoutine][currentSetting] = 0;
-     factorChange = true;
-      Serial.print(settingNames[currentSetting]);Serial.print(" set to ");Serial.println(routineSettings[currentRoutine][currentSetting]);
-      Serial.print("currentRoutine ");Serial.println(currentRoutine);
-     break;
-     }
-   case btnSELECT:
-     {
-     if (++currentSetting > 3)
-      currentSetting = 0;
-     settingChange = true;
-     Serial.print("Current Selected Setting: ");Serial.println(settingNames[currentSetting]);
-     break;
-     }
-     case btnNONE:
-     {
-     Serial.print("NONE  ");
-     break;
-     }
- }
-}
-
 
 void LED(int level, int row, int column, byte red, byte green, byte blue){ //****LED Routine****LED Routine****LED Routine****LED Routine
 //This is where it all starts
