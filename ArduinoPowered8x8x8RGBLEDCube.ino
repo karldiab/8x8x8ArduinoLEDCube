@@ -4771,6 +4771,7 @@ void clean(){
   
 }
 void interruptRoutine(bool resetInterrupt){
+  return;
   if (resetInterrupt)
     interrupted = false;
   if (settingChange) {
