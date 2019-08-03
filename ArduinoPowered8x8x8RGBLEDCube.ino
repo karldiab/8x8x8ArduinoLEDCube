@@ -104,13 +104,9 @@ int BAM_Bit, BAM_Counter=0; // Bit Angle Modulation variables to keep track of t
 //These variables can be used for other things
 unsigned long start;//for a millis timer to cycle through the animations
 //appealing sets of colors to use for various animations
-#define numberOfColorSets 5
+#define numberOfColorSets 1
 const int colorSets[numberOfColorSets][8][3] PROGMEM = {
-  {{0, 5, 15},{0, 1, 9},{0, 0, 10},{1, 0, 11},{3, 0, 12},{10, 0, 15},{10, 0, 10},{10, 0, 1}},
-  {{15, 15, 0},{10, 10, 0},{15, 5, 0},{15, 2, 0},{15, 1, 0},{15, 0, 0},{12, 0, 0},{10, 0, 0}},
-  {{15, 0, 0},{15, 6, 0},{15, 15, 0},{9, 14, 0},{0, 15, 0},{0, 15, 15},{0, 0, 15},{6, 3, 15}},//rainbow
-  {{6, 3, 15},{4, 3, 15},{1, 3, 15},{0, 0, 15},{1, 2, 12},{7, 1, 9},{10, 0, 7},{15, 0, 0}},//purple to blue to red
-  {{0, 15, 0},{1, 12, 2},{2, 11, 7},{3, 9, 10},{4, 7, 11},{5, 5, 13},{6, 4, 14},{6, 3, 15}}//green to purple
+  {{6, 15, 15},{6, 15, 15},{6, 15, 15},{6, 15, 15},{6, 15, 15},{6, 15, 15},{6, 15, 15},{6, 15, 15}}
  };
 #define numberOfMessages 4
 String messages[numberOfMessages] = {"?","X","!","CUBE"};
@@ -1669,73 +1665,73 @@ void loop(){//***start loop***start loop***start loop***start loop***start loop*
       }
       case 1 : 
       {
-        spirals(routineSettings[currentRoutine]);
+        //spirals(routineSettings[currentRoutine]);
         break;
       }
       case 2 : 
       {
-        rubiksCube(routineSettings[currentRoutine]);
+        //rubiksCube(routineSettings[currentRoutine]);
         break;
       }
       case 3 : 
       {
-        folder(routineSettings[currentRoutine]);
-        clean(); 
+        //folder(routineSettings[currentRoutine]);
+        //clean(); 
         break;
       }
       case 4 : 
       {
-        displayTextRoutine(routineSettings[currentRoutine]);
-        clean();
+        ////displayTextRoutine(routineSettings[currentRoutine]);
+        //clean();
         break;
       }
       case 5 : 
       {
-        tesseract(routineSettings[currentRoutine]);
-        clean();
+        ///tesseract(routineSettings[currentRoutine]);
+        //clean();
         break;
       }
       case 6 : 
       {
-        glowingCube(routineSettings[currentRoutine]);
+        //glowingCube(routineSettings[currentRoutine]);
         break;
       }
       case 7 : 
       {
-        sinwaveTwo();
-        clean();
+        //sinwaveTwo();
+        //clean();
         break;
       }
       case 8 : 
       {
-        color_wheelTWO();
-        clean();
+        ///color_wheelTWO();
+        //clean();
         break;
       }
       case 9 :
       {
-        bouncyvTwo();
-        clean();
+        //bouncyvTwo();
+        //clean();
         break;
       }
       case 10 :
       {
-        fireworks(5,15,0,routineSettings[currentRoutine]);
-        break;
+        //fireworks(5,15,0,routineSettings[currentRoutine]);
+        //break;
       }
       case 11 : 
       {
-        dancingCube(routineSettings[currentRoutine]);
+        //dancingCube(routineSettings[currentRoutine]);
         break;
       }
       case 12 :
       {
-        wipe_out();
+        //wipe_out();
         clean();
       }
       case 13 :
       {
-        harlem_shake();
+        //harlem_shake();
         clean();
       }
       case 14 :
@@ -3089,42 +3085,42 @@ if(ledcolor<200){
 //  Serial.println(y[addr]);
 //  Serial.println();
   if(z[addr]>=7)
-  LED(z[addr], x[addr], y[addr], 0, 5, 15);
+  LED(z[addr], x[addr], y[addr], 6,15,15);
   if(z[addr]==6)
-  LED(z[addr], x[addr], y[addr], 0, 1, 9);
+  LED(z[addr], x[addr], y[addr], 6,15,15);
    if(z[addr]==5)
-  LED(z[addr], x[addr], y[addr], 0, 0, 10);
+  LED(z[addr], x[addr], y[addr], 6,15,15);
    if(z[addr]==4)
-  LED(z[addr], x[addr], y[addr], 1, 0, 11); 
+  LED(z[addr], x[addr], y[addr], 6,15,15); 
     if(z[addr]==3)
-  LED(z[addr], x[addr], y[addr], 3, 0, 12);
+  LED(z[addr], x[addr], y[addr], 6,15,15);
     if(z[addr]==2)
-  LED(z[addr], x[addr], y[addr], 10, 0, 15);
+  LED(z[addr], x[addr], y[addr], 6,15,15);
     if(z[addr]==1)
-  LED(z[addr], x[addr], y[addr], 10, 0, 10);
+  LED(z[addr], x[addr], y[addr], 6,15,15);
     if(z[addr]<=0)
-  LED(z[addr], x[addr], y[addr], 10, 0, 1);
+  LED(z[addr], x[addr], y[addr], 6,15,15);
 }}//200
 
   else if(ledcolor>=200&&ledcolor<300){
   for(addr=0; addr<leds; addr++){
     LED(zold[addr], xold[addr], yold[addr], 0, 0, 0);
   if(z[addr]>=7)
-  LED(z[addr], x[addr], y[addr], 15, 15, 0);
+  LED(z[addr], x[addr], y[addr], 6,15,15);
   if(z[addr]==6)
-  LED(z[addr], x[addr], y[addr], 10, 10, 0);
+  LED(z[addr], x[addr], y[addr], 6,15,15);
    if(z[addr]==5)
-  LED(z[addr], x[addr], y[addr], 15, 5, 0);
+  LED(z[addr], x[addr], y[addr], 6,15,15);
    if(z[addr]==4)
-  LED(z[addr], x[addr], y[addr], 15, 2, 0); 
+  LED(z[addr], x[addr], y[addr], 6,15,15); 
     if(z[addr]==3)
-  LED(z[addr], x[addr], y[addr], 15, 1, 0);
+  LED(z[addr], x[addr], y[addr], 6,15,15);
     if(z[addr]==2)
-  LED(z[addr], x[addr], y[addr], 15, 0, 0);
+  LED(z[addr], x[addr], y[addr], 6,15,15);
     if(z[addr]==1)
-  LED(z[addr], x[addr], y[addr], 12, 0, 0);
+  LED(z[addr], x[addr], y[addr], 6,15,15);
     if(z[addr]<=0)
-  LED(z[addr], x[addr], y[addr], 10, 0, 0);
+  LED(z[addr], x[addr], y[addr], 6,15,15);
 }}//300
 
     else if(ledcolor>=300&&ledcolor<400){
@@ -3132,21 +3128,21 @@ if(ledcolor<200){
       //{{15, 0, 0},{15, 6, 0},{15, 15, 0},{9, 14, 0},{0, 15, 0},{0, 15, 15},{0, 0, 15},{6, 3, 15}}
     LED(zold[addr], xold[addr], yold[addr], 0, 0, 0);
     if(z[addr]>=7)
-    LED(z[addr], x[addr], y[addr], 15, 0, 0);
-    if(z[addr]==6)
-    LED(z[addr], x[addr], y[addr], 15, 6, 0);
-     if(z[addr]==5)
-    LED(z[addr], x[addr], y[addr], 15, 15, 0);
-     if(z[addr]==4)
-    LED(z[addr], x[addr], y[addr], 9, 14, 0); 
-      if(z[addr]==3)
-    LED(z[addr], x[addr], y[addr], 0, 15, 0);
-      if(z[addr]==2)
-    LED(z[addr], x[addr], y[addr], 0, 15, 15);
-      if(z[addr]==1)
-    LED(z[addr], x[addr], y[addr], 0, 0, 15);
-      if(z[addr]<=0)
-    LED(z[addr], x[addr], y[addr], 6, 3, 15);
+  LED(z[addr], x[addr], y[addr], 6,15,15);
+  if(z[addr]==6)
+  LED(z[addr], x[addr], y[addr], 6,15,15);
+   if(z[addr]==5)
+  LED(z[addr], x[addr], y[addr], 6,15,15);
+   if(z[addr]==4)
+  LED(z[addr], x[addr], y[addr], 6,15,15); 
+    if(z[addr]==3)
+  LED(z[addr], x[addr], y[addr], 6,15,15);
+    if(z[addr]==2)
+  LED(z[addr], x[addr], y[addr], 6,15,15);
+    if(z[addr]==1)
+  LED(z[addr], x[addr], y[addr], 6,15,15);
+    if(z[addr]<=0)
+  LED(z[addr], x[addr], y[addr], 6,15,15);
     }}
      if(ledcolor>=500&&ledcolor<600){
 
@@ -4771,6 +4767,7 @@ void clean(){
   
 }
 void interruptRoutine(bool resetInterrupt){
+  return;
   if (resetInterrupt)
     interrupted = false;
   if (settingChange) {
