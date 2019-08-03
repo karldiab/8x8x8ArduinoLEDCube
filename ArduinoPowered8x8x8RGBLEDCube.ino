@@ -38,6 +38,7 @@ int routineSettings[numberOfRoutines][4];
 char* settingNames[4] = {"A", "B", "C", "D"};
 //This array is used to hold the limits for each setting. This is important to prevent OOB errors. Each setting limit defaults to 9 if not set
 int routineSettingsLimits[numberOfRoutines][4];
+int finishedRoutines[numberOfRoutines];
 int currentSetting = 0;
 int currentRoutine = 0;
 unsigned long lastTimeInterrupted = millis();
@@ -1654,11 +1655,12 @@ void loop(){//***start loop***start loop***start loop***start loop***start loop*
 //Each animation located in a sub routine
 // To control an LED, you simply:
 // LED(level you want 0-7, row you want 0-7, column you want 0-7, red brighness 0-15, green brighness 0-15, blue brighness 0-15);
-  if (currentRoutine < 0) {
-    currentRoutine = numberOfRoutines-1;
-   } else if (currentRoutine > numberOfRoutines) {
-    currentRoutine = 0;
-   }
+//  if (currentRoutine < 0) {
+//    currentRoutine = numberOfRoutines-1;
+//   } else if (currentRoutine > numberOfRoutines) {
+//    currentRoutine = 0;
+//   }
+    currentRoutine = random(0,numberOfRoutines);
     switch (currentRoutine) {
       case 0 : 
       {
@@ -5105,4 +5107,3 @@ void drawLines(float* pointsMatrix, int* adjacencyMatrix, int pointCounter, int 
     }
   }
 }
-
